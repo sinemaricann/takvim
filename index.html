@@ -84,7 +84,10 @@ button,input{font:inherit;color:inherit}
 .fld input{background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:7px 10px;font-weight:600;font-size:14px;min-width:0;width:100%}
 .fld input::placeholder{color:var(--muted);font-weight:500}
 .fld-date{width:156px}.fld-time{width:96px}.fld.grow{flex:1 1 160px}
-.kinds{display:grid;gap:4px}
+.kinds{display:grid;gap:4px;justify-items:start}
+.fld-dategroup{display:flex;align-items:flex-end;gap:10px}
+.kind-btn{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--line);border-radius:999px;background:var(--surface);padding:6px 12px;font-weight:700;font-size:14px;box-shadow:2px 2px 0 var(--line);cursor:pointer}
+.kinds .kchips{max-width:520px}
 .rep{flex:1 1 100%;display:grid;gap:4px;padding-bottom:12px;border-bottom:1.5px dashed var(--line)}
 .rep-row{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 14px}
 .rep-custom{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;padding-bottom:4px}
@@ -110,6 +113,7 @@ button,input{font:inherit;color:inherit}
 /* A grey cat naps on the calendar's top edge, paws and tail hanging over the title row.
    The SVG's line y=42 is the card edge, so it is shifted up by 42/160 of its width. */
 .cat{position:absolute;right:22px;top:-39px;width:150px;height:auto;z-index:2;pointer-events:none;overflow:visible}
+.cat *{pointer-events:visiblePainted}
 .cat-ln{stroke:#2A2933;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .cat-soft{stroke:#3E4250;stroke-linecap:round;stroke-linejoin:round;fill:none}
 .cat-fur{fill:#6E7380}
@@ -122,12 +126,16 @@ button,input{font:inherit;color:inherit}
 .cat-ear{animation:cat-ear 5s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
 .cat-blink{animation:cat-blink 5s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}
 .cat-look{animation:cat-look 7s ease-in-out infinite}
-.cat-tail{animation:cat-sway 3.6s ease-in-out infinite;transform-box:view-box;transform-origin:116px 40px}
+.cat-tail{animation:cat-sway 3.6s ease-in-out infinite;transform-box:view-box;transform-origin:116px 40px;transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
+.cat-pupil{transition:transform .25s;transform-box:fill-box;transform-origin:50% 50%}
+/* Pointed at, the cat stops, looks straight at you with wide pupils and puts its tail up. */
+.cat:hover .cat-tail{animation:none;transform:rotate(-150deg)}
+.cat:hover .cat-look,.cat:hover .cat-blink,.cat:hover .cat-ear{animation:none}
+.cat:hover .cat-pupil{transform:scale(1.45,1.1)}
 .cal-head{display:grid;border-bottom:var(--bw) solid var(--line)}
 .cal-bar{display:flex;flex-wrap:wrap;align-items:stretch;border-top:var(--bw) solid var(--line)}
-.tabs{display:flex;border-right:var(--bw) solid var(--line)}
-.tab{border:0;background:var(--surface);font:600 17px var(--f-display);padding:12px 24px;cursor:pointer}
-.tab+.tab{border-left:var(--bw) solid var(--line)}
+.tabs{display:flex;gap:8px;padding:8px 12px}
+.tab{border:1.5px solid var(--line);border-radius:10px;background:var(--surface);font:600 16px var(--f-display);padding:5px 16px;box-shadow:2px 2px 0 var(--line);cursor:pointer}
 .tab[aria-selected="true"]{background:var(--teal);color:var(--on-tint)}
 .cal-title{position:relative;display:flex;align-items:center;gap:8px;padding:12px 16px;min-width:0;min-height:58px}
 .cal-title h2{margin:0;flex:1;min-width:0;font:600 24px var(--f-display);text-wrap:balance}
@@ -142,13 +150,16 @@ button,input{font:inherit;color:inherit}
 .month{padding:14px;display:grid;gap:6px}
 .dow,.grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
 .dow span{text-align:center;font:800 11px var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.cell{min-width:0;min-height:118px;display:flex;flex-direction:column;gap:4px;padding:5px;text-align:left;border:1.5px solid var(--line);border-radius:10px;background:var(--card);cursor:pointer}
-.cell.out{background:transparent;border-style:dashed;opacity:.5}
+.cell{min-width:0;min-height:118px;display:flex;flex-direction:column;gap:4px;padding:5px;text-align:left;border:1.5px solid var(--line);border-radius:10px;background:var(--card);box-shadow:2px 2px 0 var(--line);cursor:pointer}
+.cell.out{background:transparent;border-style:dashed;opacity:.5;box-shadow:none}
 .cell.past:not(.today) .num{color:var(--muted)}
 .cell[aria-pressed="true"]{background:var(--surface);box-shadow:3px 3px 0 var(--line);transform:translate(-1px,-1px)}
 .cell-top{display:flex;align-items:center;justify-content:space-between;gap:4px}
 .num{width:26px;height:26px;display:grid;place-items:center;border-radius:50%;font:600 14px var(--f-display);font-variant-numeric:tabular-nums}
 .cell.today .num{background:var(--pink);color:var(--on-tint);border:1.5px solid var(--line)}
+/* Today also gets a soft pink ring inside its border. */
+.cell.today{box-shadow:inset 0 0 0 3px var(--pink),2px 2px 0 var(--line)}
+.cell.today[aria-pressed="true"]{box-shadow:inset 0 0 0 3px var(--pink),3px 3px 0 var(--line)}
 .warn{width:18px;height:18px;display:grid;place-items:center;border-radius:50%;background:var(--alert);color:var(--alert-on);font:800 11px/1 var(--f-body)}
 .pills{display:grid;gap:3px;min-width:0}
 .pill{display:block;min-width:0;padding:2px 6px;border-radius:6px;border:1px solid var(--line);background:var(--k);color:var(--on-tint);font:700 11px/1.3 var(--f-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -158,7 +169,7 @@ button,input{font:inherit;color:inherit}
 .cell.wk .pill{white-space:normal;overflow-wrap:anywhere;font-size:12px;line-height:1.3;padding:4px 6px}
 .more{font:800 11px var(--f-body);color:var(--muted);padding-left:2px}
 
-.day{border-top:var(--bw) solid var(--line);padding:16px;display:grid;gap:12px}
+.day{padding:16px;display:grid;gap:12px;min-height:240px;align-content:start}
 .day-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
 .day-head h3{margin:0;font:600 20px var(--f-display)}
 .day-head .small-btn{margin-left:auto}
@@ -293,6 +304,7 @@ button,input{font:inherit;color:inherit}
   .ev,.cell,.tt-block,.tdel,.sound-btn,.rail .menu,.banner,.small-btn,.icon-btn,.btn-add,.tab,.frow,.nx,.bn-row,.kchip span,.kcolors span,.kdel-btn,.ev-del,.toast button,.link-btn,.ev-ask .small-btn{transition:transform .14s,box-shadow .14s,background-color .14s}
   .ev:hover{transform:translate(-2px,-3px);box-shadow:5px 7px 0 var(--line)}
   .cell:hover{background:var(--surface);transform:translate(-2px,-3px);box-shadow:4px 5px 0 var(--line);position:relative;z-index:1}
+  .cell.today:hover{box-shadow:inset 0 0 0 3px var(--pink),4px 5px 0 var(--line)}
   .tt-block:hover{transform:translate(-2px,-3px);box-shadow:4px 6px 0 var(--line);z-index:2}
   .rail .menu:hover,.banner:hover{transform:translate(-2px,-3px);box-shadow:6px 8px 0 var(--line)}
   .small-btn:hover,.icon-btn:hover,.kdel-btn:hover,.toast button:hover,.sound-btn:hover{transform:translate(-1px,-2px);box-shadow:3px 4px 0 var(--line)}
@@ -301,7 +313,7 @@ button,input{font:inherit;color:inherit}
   .btn-add:hover,.tab:hover,.frow:hover,.nx:hover,.bn-row:hover{transform:translate(-2px,-2px);box-shadow:3px 3px 0 var(--line);position:relative;z-index:1}
   .ev-del:hover{transform:translate(-1px,-2px);box-shadow:2px 3px 0 var(--line)}
   .link-btn:hover{transform:translate(-1px,-2px)}
-  .small-btn:active,.icon-btn:active,.btn-add:active,.kdel-btn:active,.toast button:active{transform:translate(1px,2px);box-shadow:none}
+  .small-btn:active,.icon-btn:active,.btn-add:active,.kdel-btn:active,.toast button:active,.tab:active,.cell:active{transform:translate(1px,2px);box-shadow:none}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}.cat *{animation:none!important}}
 
@@ -321,7 +333,7 @@ button,input{font:inherit;color:inherit}
   .rail{grid-template-columns:minmax(0,1fr)}
   .filters{display:flex;flex-wrap:wrap;gap:6px;padding:10px}
   .frow,.frow:last-child{border:1.5px solid var(--line);border-radius:999px;padding:5px 12px;font-size:14px}
-  .tabs{flex:1 1 100%;border-right:0;border-bottom:var(--bw) solid var(--line)}
+  .tabs{flex:1 1 100%;padding-bottom:0}
   .tab{flex:1}
   .month{padding:10px}
   .dow,.grid{gap:4px}
@@ -376,7 +388,7 @@ button,input{font:inherit;color:inherit}
           <g class="cat-ear"><path class="cat-fur cat-ln" d="M50 18 L62 8 L62 26 Z"/><path d="M53 18.5 L59.5 13 L59.5 22 Z" fill="#F4A6C0"/></g>
           <ellipse class="cat-fur cat-ln" cx="46" cy="34" rx="20.5" ry="16.5"/>
           <ellipse cx="46" cy="42.4" rx="7.4" ry="4.6" fill="#8A8F9B"/>
-          <g class="cat-blink"><ellipse cx="37.5" cy="34" rx="5.4" ry="5.6" fill="#F5C842"/><g class="cat-look"><ellipse cx="37.5" cy="34.4" rx="2.4" ry="4.2" fill="#2A2933"/><circle cx="35.9" cy="32" r="1.6" fill="#fff"/><circle cx="39.1" cy="36.6" r=".8" fill="#fff"/></g><path class="cat-soft" stroke-width="1.3" d="M32.5 30.6 Q37.5 27.8 42.5 30.6"/></g><g class="cat-blink"><ellipse cx="54.5" cy="34" rx="5.4" ry="5.6" fill="#F5C842"/><g class="cat-look"><ellipse cx="54.5" cy="34.4" rx="2.4" ry="4.2" fill="#2A2933"/><circle cx="52.9" cy="32" r="1.6" fill="#fff"/><circle cx="56.1" cy="36.6" r=".8" fill="#fff"/></g><path class="cat-soft" stroke-width="1.3" d="M49.5 30.6 Q54.5 27.8 59.5 30.6"/></g>
+          <g class="cat-blink"><ellipse cx="37.5" cy="34" rx="5.4" ry="5.6" fill="#F5C842"/><g class="cat-look"><ellipse cx="37.5" cy="34.4" rx="2.4" ry="4.2" fill="#2A2933" class="cat-pupil"/><circle cx="35.9" cy="32" r="1.6" fill="#fff"/><circle cx="39.1" cy="36.6" r=".8" fill="#fff"/></g><path class="cat-soft" stroke-width="1.3" d="M32.5 30.6 Q37.5 27.8 42.5 30.6"/></g><g class="cat-blink"><ellipse cx="54.5" cy="34" rx="5.4" ry="5.6" fill="#F5C842"/><g class="cat-look"><ellipse cx="54.5" cy="34.4" rx="2.4" ry="4.2" fill="#2A2933" class="cat-pupil"/><circle cx="52.9" cy="32" r="1.6" fill="#fff"/><circle cx="56.1" cy="36.6" r=".8" fill="#fff"/></g><path class="cat-soft" stroke-width="1.3" d="M49.5 30.6 Q54.5 27.8 59.5 30.6"/></g>
           <circle cx="30" cy="42" r="3.2" fill="#F4A6C0" opacity=".75"/><circle cx="62" cy="42" r="3.2" fill="#F4A6C0" opacity=".75"/>
           <path d="M44.2 40.2 h3.6 l-1.8 1.8 Z" fill="#F4A6C0"/>
           <path class="cat-soft" stroke-width="1.3" d="M46 42 v1 q-1.8 1.8 -3.4 .2 M46 43 q1.8 1.8 3.4 .2"/>
@@ -406,7 +418,7 @@ button,input{font:inherit;color:inherit}
           <div class="dow" aria-hidden="true"><span>Pzt</span><span>Sal</span><span>Çar</span><span>Per</span><span>Cum</span><span>Cmt</span><span>Paz</span></div>
           <div class="grid" id="grid"></div>
         </div>
-        <div class="day" id="day"></div>
+        <div class="day" id="day" hidden></div>
       </div>
       <div id="list-view" class="list" hidden></div>
     </section>
@@ -436,15 +448,17 @@ button,input{font:inherit;color:inherit}
             <label class="fld fld-date" id="rep-until-f" hidden><span class="fl">Bitiş (isteğe bağlı)</span><input id="r-until" type="date"></label>
           </div>
         </div>
-        <label class="fld fld-date"><span class="fl">Tarih</span><input id="f-date" type="date"></label>
+        <div class="fld-dategroup">
+          <label class="fld fld-date"><span class="fl">Tarih</span><input id="f-date" type="date"></label>
+          <label class="tent"><input id="f-tent" type="checkbox"> Kesin değil</label>
+        </div>
         <label class="fld fld-time"><span class="fl">Saat</span><input id="f-time" placeholder="18.30" maxlength="20"></label>
         <label class="fld grow"><span class="fl">Yer</span><input id="f-place" placeholder="KKM A Salonu" maxlength="80"></label>
-        <div class="kinds" role="radiogroup" aria-labelledby="kinds-l">
+        <div class="kinds">
           <span id="kinds-l" class="fl">Tür</span>
-          <div class="kchips" id="kchips"></div>
+          <button type="button" class="kind-btn" id="kind-btn" aria-expanded="false" aria-controls="kchips"><span class="sw" id="kind-sw"></span><span id="kind-name">Sınav</span><span aria-hidden="true">▾</span></button>
+          <div class="kchips" id="kchips" role="radiogroup" aria-labelledby="kinds-l" hidden></div>
         </div>
-        <label class="fld grow"><span class="fl">Not</span><input id="f-note" placeholder="İsteğe bağlı" maxlength="120"></label>
-        <label class="tent"><input id="f-tent" type="checkbox"> Tarih kesin değil</label>
         <button id="f-cancel" class="link-btn" type="button" hidden>Vazgeç</button>
       </div>
       <p id="f-msg" class="msg" role="status" hidden></p>
@@ -781,7 +795,6 @@ button,input{font:inherit;color:inherit}
       const d = new Date(y, m, 1 - lead + i);
       grid.append(dayCell(d, by[keyOf(d)] || [], clash, 3, d.getMonth() !== m));
     }
-    renderDay(by, clash);
   }
 
   // One day box; month view shows up to three events, week view shows them all.
@@ -807,12 +820,7 @@ button,input{font:inherit;color:inherit}
       if (evs.length > shown.length) ps.append(el("span", "more", `+${evs.length - shown.length}`));
       c.append(ps);
     }
-    c.onclick = () => {
-      S.sel = k;
-      S.ym = [d.getFullYear(), d.getMonth()];
-      if (!S.editing) $("#f-date").value = k;
-      render();
-    };
+    c.onclick = () => openDay(k);
     return c;
   }
 
@@ -829,14 +837,46 @@ button,input{font:inherit;color:inherit}
       const d = new Date(s.getFullYear(), s.getMonth(), s.getDate() + i);
       grid.append(dayCell(d, by[keyOf(d)] || [], clash, 0, false));
     }
-    renderDay(by, clash);
   }
 
+  // Clicking a day (or "Bugün") swaps the grid for that day's program: its events and classes, in time order.
+  function openDay(k) {
+    const d = parseKey(k);
+    S.sel = k;
+    S.ym = [d.getFullYear(), d.getMonth()];
+    S.view = "day";
+    if (!S.editing) $("#f-date").value = k;
+    render();
+  }
+  function renderDayView(clash) {
+    const d = parseKey(S.sel);
+    $("#title").textContent = `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}, ${DAYS[dow(d)]}`;
+    renderDay(groupByDay(visible()), clash);
+  }
+  function courseCard(c) {
+    const li = el("li", "ev course"), metu = c.start % 60 === 40;
+    li.style.setProperty("--k", COLORS[c.color]);
+    const main = el("button", "ev-main");
+    main.type = "button";
+    main.disabled = !writable();
+    main.setAttribute("aria-label", `Dersi düzenle: ${c.code}`);
+    main.append(el("span", "ev-dot"));
+    const body = el("span", "ev-body"), meta = el("span", "ev-meta"), chips = el("span", "ev-chips");
+    body.append(el("span", "ev-title", c.code + (c.section ? ` /${c.section}` : "")));
+    meta.append(el("b", null, `${hhmm(c.start)}–${hhmm(c.start + c.hours * 60 - (metu ? 10 : 0))}`));
+    if (c.room) meta.append(" · " + c.room);
+    chips.append(el("span", "chip kind", "Ders"));
+    body.append(meta, chips);
+    main.append(body);
+    main.onclick = () => openCourse(c);
+    li.append(main);
+    return li;
+  }
   function renderDay(by, clash) {
-    const box = $("#day"), k = S.sel;
+    const box = $("#day"), k = S.sel, wd = dow(parseKey(k));
     box.replaceChildren();
     const head = el("div", "day-head");
-    head.append(el("h3", null, longDate(k)), el("span", "rel", rel(k)));
+    head.append(el("span", "rel", rel(k)));
     if (writable()) {
       const b = el("button", "small-btn", "+ Bu güne ekle");
       b.type = "button";
@@ -845,14 +885,18 @@ button,input{font:inherit;color:inherit}
     }
     box.append(head);
     const evs = by[k] || [];
+    const cs = wd < 5 ? S.courses.filter(c => c.day === wd && (!c.until || c.until >= k)) : [];
+    const items = [...evs.map(e => [sortMin(e), () => card(e, false, clash)]), ...cs.map(c => [c.start, () => courseCard(c)])]
+      .sort((x, y) => x[0] - y[0]);
     if (!S.loaded) box.append(el("p", "empty", "Etkinlikler yükleniyor…"));
-    else if (!evs.length) box.append(el("p", "empty", "Bu gün boş."));
+    else if (!items.length) box.append(el("p", "empty", "Bu gün boş."));
     else {
       const ul = el("ul", "evs");
-      evs.forEach(e => ul.append(card(e, false, clash)));
+      items.forEach(([, make]) => ul.append(make()));
       box.append(ul);
     }
   }
+
 
   function renderList(clash) {
     const all = visible().sort(byTime);
@@ -943,6 +987,20 @@ button,input{font:inherit;color:inherit}
       box.append(lab);
     }
   }
+
+  // The kind picker stays folded to one pill showing the chosen kind; a click unfolds the chips.
+  function syncKindBtn() {
+    const cur = form.querySelector('input[name="kind"]:checked'), k = cur && KINDS[cur.value] ? KINDS[cur.value] : KINDS.sinav || KINDS.diger;
+    $("#kind-sw").style.setProperty("--k", k.c);
+    $("#kind-name").textContent = k.label;
+    $("#kind-btn").disabled = !writable();
+  }
+  function foldKinds(open) {
+    $("#kchips").hidden = !open;
+    $("#kind-btn").setAttribute("aria-expanded", String(open));
+  }
+  $("#kind-btn").onclick = () => foldKinds($("#kchips").hidden);
+  $("#kchips").addEventListener("change", () => { syncKindBtn(); foldKinds(false); });
 
   const kform = $("#kform");
   KIND_COLORS.forEach((c, i) => {
@@ -1042,8 +1100,7 @@ button,input{font:inherit;color:inherit}
         el("span", "nx-rel", rel(e.date) + (e.tentative ? " · kesin değil" : ""))
       );
       b.onclick = () => {
-        S.view = "month"; S.sel = e.date; S.ym = [d.getFullYear(), d.getMonth()];
-        render();
+        openDay(e.date);
         $("#day").scrollIntoView({behavior: reduceMotion ? "auto" : "smooth", block: "nearest"});
       };
       box.append(b);
@@ -1092,7 +1149,7 @@ button,input{font:inherit;color:inherit}
         el("span", "bn-text", e.title),
         el("span", "bn-when", longDate(e.date) + (e.time ? " · " + e.time : ""))
       );
-      row.onclick = () => { S.view = "month"; S.sel = e.date; S.ym = [d.getFullYear(), d.getMonth()]; render(); };
+      row.onclick = () => openDay(e.date);
       box.append(row);
     }
   }
@@ -1101,12 +1158,14 @@ button,input{font:inherit;color:inherit}
   function render() {
     S.occ = occurrences();
     const clash = clashes(S.occ);
-    const v = S.view;
+    const v = S.view, unit = v === "week" ? "hafta" : v === "day" ? "gün" : "ay";
     $("#month-view").hidden = v === "list";
+    $(".month").hidden = v === "day";
+    $("#day").hidden = v !== "day";
     $("#list-view").hidden = v !== "list";
     $("#nav").hidden = v === "list";
-    $("#prev").setAttribute("aria-label", v === "week" ? "Önceki hafta" : "Önceki ay");
-    $("#next").setAttribute("aria-label", v === "week" ? "Sonraki hafta" : "Sonraki ay");
+    $("#prev").setAttribute("aria-label", `Önceki ${unit}`);
+    $("#next").setAttribute("aria-label", `Sonraki ${unit}`);
     $("#past-btn").hidden = v !== "list";
     document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", String(t.dataset.view === v)));
     renderKindChips();
@@ -1114,7 +1173,8 @@ button,input{font:inherit;color:inherit}
     renderNext();
     renderTodos();
     renderBanner();
-    v === "list" ? renderList(clash) : v === "week" ? renderWeek(clash) : renderMonth(clash);
+    v === "list" ? renderList(clash) : v === "week" ? renderWeek(clash) : v === "day" ? renderDayView(clash) : renderMonth(clash);
+    syncKindBtn();
     renderProgram();
     renderStatus();
   }
@@ -1158,7 +1218,7 @@ button,input{font:inherit;color:inherit}
     const data = {
       date: $("#f-date").value, time: $("#f-time").value.trim(), title: $("#f-title").value.trim(),
       place: $("#f-place").value.trim(), kind: k ? k.value : "diger",
-      tentative: $("#f-tent").checked, note: $("#f-note").value.trim()
+      tentative: $("#f-tent").checked, note: ""
     };
     const r = readRepeat();
     if (r) data.repeat = r.until ? r : {every: r.every, unit: r.unit};
@@ -1169,6 +1229,8 @@ button,input{font:inherit;color:inherit}
     S.editing = null;
     form.reset();
     setRepeat(null);
+    syncKindBtn();
+    foldKinds(false);
     $("#f-date").value = d || S.sel;
     form.classList.remove("editing");
     $("#f-submit").textContent = "Ekle";
@@ -1192,10 +1254,10 @@ button,input{font:inherit;color:inherit}
     $("#f-date").value = e.date;
     $("#f-time").value = e.time;
     $("#f-place").value = e.place;
-    $("#f-note").value = e.note;
     $("#f-tent").checked = e.tentative;
     const r = form.querySelector(`input[name="kind"][value="${kindId(e)}"]`);
     if (r) r.checked = true;
+    syncKindBtn();
     form.classList.add("editing");
     $("#f-submit").textContent = "Kaydet";
     $("#f-cancel").hidden = false;
@@ -1216,6 +1278,7 @@ button,input{font:inherit;color:inherit}
     const data = readForm();
     const prevEv = S.editing && S.events.find(x => x.id === S.editing);
     if (prevEv && prevEv.reminder) data.reminder = true;
+    if (prevEv) data.note = prevEv.note;
     if (prevEv && data.repeat && prevEv.skip.length) data.skip = prevEv.skip;
     if (!data.title) { msg("Bir başlık yaz."); $("#f-title").focus(); return; }
     if (!isKey(data.date)) { msg("Bir tarih seç."); $("#f-date").focus(); return; }
@@ -1459,9 +1522,10 @@ button,input{font:inherit;color:inherit}
     if (!S.editing) $("#f-date").value = S.sel;
     render();
   };
-  $("#prev").onclick = () => S.view === "week" ? shiftWeek(-1) : shiftMonth(-1);
-  $("#next").onclick = () => S.view === "week" ? shiftWeek(1) : shiftMonth(1);
-  $("#today-btn").onclick = () => { S.ym = [now.getFullYear(), now.getMonth()]; S.sel = TODAY; if (!S.editing) $("#f-date").value = TODAY; render(); };
+  const shiftDay = n => { const d = parseKey(S.sel); openDay(keyOf(new Date(d.getFullYear(), d.getMonth(), d.getDate() + n))); };
+  $("#prev").onclick = () => S.view === "week" ? shiftWeek(-1) : S.view === "day" ? shiftDay(-1) : shiftMonth(-1);
+  $("#next").onclick = () => S.view === "week" ? shiftWeek(1) : S.view === "day" ? shiftDay(1) : shiftMonth(1);
+  $("#today-btn").onclick = () => openDay(TODAY);
   $("#past-btn").onclick = () => { S.showPast = !S.showPast; render(); };
 
   $("#f-date").value = TODAY;

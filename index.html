@@ -56,18 +56,16 @@ button,input{font:inherit;color:inherit}
 /* brand */
 .brand{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 14px}
 .brand svg{flex:none}
-.spark{width:44px;height:20px;align-self:flex-start;margin-top:10px}
-.spark rect,.pin .tag{fill:var(--mark);stroke:var(--line);stroke-width:2.2}
-.pin{width:40px;height:58px;align-self:flex-start}
-.pin line{stroke:var(--line);stroke-width:2.6;stroke-linecap:round}
-.pin .bead{fill:var(--sun);stroke:var(--line);stroke-width:2.4}
-.mark{margin:0;display:flex;font-family:var(--f-display);font-weight:700;font-size:clamp(46px,10vw,78px);line-height:1.05;letter-spacing:.02em;
-  color:var(--mark);-webkit-text-stroke:4px var(--line);paint-order:stroke fill;text-shadow:4px 5px 0 var(--sun)}
+.bstar{width:18px;height:18px}
+.bstar.s{width:12px;height:12px}
+/* Semibold keeps the A's counter open under the outline; the outline is near-black for contrast. */
+.mark{margin:0;display:flex;font-family:var(--f-display);font-weight:600;font-size:clamp(38px,7.5vw,58px);line-height:1.05;letter-spacing:.04em;
+  color:var(--mark);-webkit-text-stroke:3.4px #17161D;paint-order:stroke fill;text-shadow:4px 5px 0 #B9ADE8}
 .mark span{display:inline-block}
-.mark span:nth-child(odd){transform:rotate(-5deg) translateY(3px)}
-.mark span:nth-child(even){transform:rotate(4deg) translateY(-2px)}
-.season{align-self:flex-end;margin-bottom:10px;transform:rotate(5deg);font:600 14px var(--f-display);letter-spacing:.04em;
-  background:var(--pink);color:var(--on-tint);border:var(--bw) solid var(--line);border-radius:999px;padding:3px 12px;box-shadow:2px 3px 0 var(--line)}
+.mark span:nth-child(odd){transform:rotate(-3deg) translateY(2px)}
+.mark span:nth-child(even){transform:rotate(3deg) translateY(-1px)}
+.season{align-self:flex-end;margin-bottom:8px;font:600 14px var(--f-display);letter-spacing:.04em;
+  background:var(--lilac);color:var(--on-tint);border:var(--bw) solid var(--line);border-radius:999px;padding:3px 12px;box-shadow:2px 3px 0 var(--line)}
 
 /* add bar */
 .addbar{overflow:hidden;max-width:880px;width:100%;margin:0 auto}
@@ -357,9 +355,10 @@ button,input{font:inherit;color:inherit}
 </button>
 <div class="wrap">
   <header class="brand">
-    <svg class="spark" viewBox="0 0 44 20" aria-hidden="true"><rect x="5" y="5" width="9" height="9" transform="rotate(45 9.5 9.5)"/><rect x="27" y="5" width="9" height="9" transform="rotate(45 31.5 9.5)"/></svg>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="bstar" viewBox="0 0 24 24"><path d="M12 3.5 l2.4 4.9 5.4.8 -3.9 3.8 .9 5.4 -4.8-2.5 -4.8 2.5 .9-5.4 -3.9-3.8 5.4-.8Z" fill="#B9ADE8" stroke="#2A2933" stroke-width="1.6" stroke-linejoin="round"/></symbol></svg>
+    <svg class="bstar s" aria-hidden="true"><use href="#bstar"/></svg><svg class="bstar" aria-hidden="true"><use href="#bstar"/></svg>
     <h1 class="mark" aria-label="Takvim"><span>T</span><span>A</span><span>K</span><span>V</span><span>İ</span><span>M</span></h1>
-    <svg class="pin" viewBox="0 0 40 58" aria-hidden="true"><line x1="13" y1="16" x2="29" y2="44"/><rect class="tag" x="6" y="5" width="13" height="13" rx="2" transform="rotate(20 12.5 11.5)"/><circle class="bead" cx="30" cy="47" r="7"/></svg>
+    <svg class="bstar" aria-hidden="true"><use href="#bstar"/></svg><svg class="bstar s" aria-hidden="true"><use href="#bstar"/></svg>
     <span class="season">güz 2026</span>
   </header>
 

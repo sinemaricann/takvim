@@ -11,7 +11,7 @@
 /* Layout: sticker cards on a dotted sky board. Add bar on top, calendar card + filter rail side by side, stacking on phones. */
 :root{
   --bg:#EEEAF7; --dot:#D2CAE6; --pat:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2734%27%20height%3D%2734%27%20viewBox%3D%270%200%2034%2034%27%3E%3Cg%20transform%3D%27translate%288.4%208.6%29%20scale%28.72%29%27%3E%3Cpath%20d%3D%27M12%205.5%20l1.9%203.9%204.3.6%20-3.1%203%20.7%204.3%20-3.8-2%20-3.8%202%20.7-4.3%20-3.1-3%204.3-.6Z%27%20fill%3D%27%23D2CAE6%27%20stroke%3D%27%23D2CAE6%27%20stroke-width%3D%271.6%27%20stroke-linejoin%3D%27round%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"); --surface:#FFFFFF; --card:#F3F1F6; --text:#2A2933; --muted:#6D6B7B; --line:#2A2933;
-  --teal:#8ED3C9; --pink:#F8CDE1; --sun:#F6D46E; --lilac:#D6CCF5; --mist:#D8E3EC; --on-tint:#2A2933;
+  --teal:#A6DCE2; --pink:#F8CDE1; --sun:#FDE59A; --lilac:#D6CCF5; --mist:#D8E3EC; --on-tint:#2A2933;
   --alert:#D9475C; --alert-on:#FFFFFF; --mark:#FFFFFF;
   --c1:#9ED8EE; --c2:#F5B5B5; --c3:#CFD8E0; --c4:#B3E8DD; --c5:#FBCB96; --c6:#A6DB95; --c7:#DCCFF7; --c8:#F4E08C; --flag:#FF9F8A; --grid:#D3DEE7; --slot-h:54px;
   --f-display:"Fredoka","Baloo 2","Arial Rounded MT Bold",ui-rounded,system-ui,sans-serif;
@@ -68,7 +68,9 @@ button,input{font:inherit;color:inherit}
   background:var(--lilac);color:var(--on-tint);border:var(--bw) solid var(--line);border-radius:999px;padding:3px 12px;box-shadow:2px 3px 0 var(--line)}
 
 /* add bar */
-.addbar{overflow:hidden;max-width:880px;width:100%;margin:0 auto}
+.addbar{max-width:880px;width:100%;margin:0 auto}
+.addbar .btn-add{border-radius:0 calc(var(--r) - 2px) 0 0}
+.addbar .add-more,.addbar .msg{border-radius:0 0 calc(var(--r) - 2px) calc(var(--r) - 2px)}
 .addbar:focus-within{box-shadow:3px 4px 0 var(--line),0 0 0 4px var(--teal)}
 .add-top{display:flex;align-items:stretch;min-width:0}
 .edit-tag{align-self:center;margin-left:14px;flex:none;font:700 11px var(--f-body);text-transform:uppercase;letter-spacing:.08em;
@@ -84,12 +86,12 @@ button,input{font:inherit;color:inherit}
 .fld input{background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:7px 10px;font-weight:600;font-size:14px;min-width:0;width:100%}
 .fld input::placeholder{color:var(--muted);font-weight:500}
 .fld-date{width:156px}.fld-time{width:96px}.fld.grow{flex:1 1 160px}
-.kinds{display:grid;gap:4px;justify-items:start}
 .fld-dategroup{display:flex;align-items:flex-end;gap:10px}
-.kind-btn{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--line);border-radius:999px;background:var(--surface);padding:6px 12px;font-weight:700;font-size:14px;box-shadow:2px 2px 0 var(--line);cursor:pointer}
-.kinds .kchips{max-width:520px}
-.rep{flex:1 1 100%;display:grid;gap:4px;padding-bottom:12px;border-bottom:1.5px dashed var(--line)}
-.rep-row{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 14px}
+/* Kind and repeat are folded into two pills; each opens a small panel right under itself, over the page. */
+.pickers{flex:1 1 100%;display:flex;flex-wrap:wrap;gap:10px 18px}
+.picker{position:relative;display:grid;gap:4px;justify-items:start}
+.pick-btn{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--line);border-radius:999px;background:var(--surface);padding:6px 12px;font-weight:700;font-size:14px;box-shadow:2px 2px 0 var(--line);cursor:pointer}
+.pop{position:absolute;top:calc(100% + 6px);left:0;z-index:30;display:grid;gap:10px;justify-items:start;width:max-content;max-width:min(380px,84vw);padding:10px;background:var(--surface);border:var(--bw) solid var(--line);border-radius:12px;box-shadow:3px 4px 0 var(--line)}
 .rep-custom{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;padding-bottom:4px}
 .rep-custom input,.rep-custom select{background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:5px 8px;font-weight:600;font-size:14px}
 .rep-custom input{width:56px}
@@ -126,10 +128,9 @@ button,input{font:inherit;color:inherit}
 .cat-ear{animation:cat-ear 5s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
 .cat-blink{animation:cat-blink 5s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}
 .cat-look{animation:cat-look 7s ease-in-out infinite}
-.cat-tail{animation:cat-sway 3.6s ease-in-out infinite;transform-box:view-box;transform-origin:116px 40px;transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
+.cat-tail{animation:cat-sway 3.6s ease-in-out infinite;transform-box:view-box;transform-origin:116px 40px}
 .cat-pupil{transition:transform .25s;transform-box:fill-box;transform-origin:50% 50%}
-/* Pointed at, the cat stops, looks straight at you with wide pupils and puts its tail up. */
-.cat:hover .cat-tail{animation:none;transform:rotate(-150deg)}
+/* Pointed at, the cat stops and looks straight at you with wide pupils (and purrs, see the script). */
 .cat:hover .cat-look,.cat:hover .cat-blink,.cat:hover .cat-ear{animation:none}
 .cat:hover .cat-pupil{transform:scale(1.45,1.1)}
 .cal-head{display:grid;border-bottom:var(--bw) solid var(--line)}
@@ -158,21 +159,35 @@ button,input{font:inherit;color:inherit}
 .num{width:26px;height:26px;display:grid;place-items:center;border-radius:50%;font:600 14px var(--f-display);font-variant-numeric:tabular-nums}
 .cell.today .num{background:var(--pink);color:var(--on-tint);border:1.5px solid var(--line)}
 /* Today also gets a soft pink ring inside its border. */
-.cell.today{box-shadow:inset 0 0 0 3px var(--pink),2px 2px 0 var(--line)}
+.cell.today{border-width:2.5px;box-shadow:inset 0 0 0 3px var(--pink),2px 2px 0 var(--line)}
 .cell.today[aria-pressed="true"]{box-shadow:inset 0 0 0 3px var(--pink),3px 3px 0 var(--line)}
 .warn{width:18px;height:18px;display:grid;place-items:center;border-radius:50%;background:var(--alert);color:var(--alert-on);font:800 11px/1 var(--f-body)}
 .pills{display:grid;gap:3px;min-width:0}
 .pill{display:block;min-width:0;padding:2px 6px;border-radius:6px;border:1px solid var(--line);background:var(--k);color:var(--on-tint);font:700 11px/1.3 var(--f-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pill.tent{border-style:dashed}
+.pill.course{border-radius:999px}
 .cell.wk{min-height:300px}
+.grid.g15{grid-template-columns:repeat(5,minmax(0,1fr))}
+.cell.f15{min-height:140px}
+.wd{font:800 11px var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-left:auto}
 .cell.wk .pills{gap:5px}
 .cell.wk .pill{white-space:normal;overflow-wrap:anywhere;font-size:12px;line-height:1.3;padding:4px 6px}
 .more{font:800 11px var(--f-body);color:var(--muted);padding-left:2px}
 
-.day{padding:16px;display:grid;gap:12px;min-height:240px;align-content:start}
-.day-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+/* Month/week grid on the left, the open day's program on the right; the grid column shrinks and fades. */
+#month-view{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,0fr);transition:grid-template-columns .4s ease}
+#month-view.split{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)}
+#month-view .month{transition:opacity .35s}
+#month-view.split .month{opacity:.5}
+#month-view.split .month:hover{opacity:.8}
+.day{min-width:0;overflow:hidden;opacity:0;padding:16px 0;display:grid;gap:12px;align-content:start;justify-items:start;transition:opacity .3s,padding .4s}
+#month-view.split .day{opacity:1;padding:16px;border-left:var(--bw) solid var(--line)}
+.day>*{width:100%}
+.day>.small-btn{width:auto}
+.day-head{display:flex;align-items:flex-start;gap:10px}
+.day-title{flex:1;min-width:0;display:grid;gap:2px}
 .day-head h3{margin:0;font:600 20px var(--f-display)}
-.day-head .small-btn{margin-left:auto}
+.day-nav{display:flex;gap:6px;flex:none}
 .rel{font-weight:800;font-size:13px;color:var(--muted)}
 .empty{margin:0;color:var(--muted);font-weight:700}
 
@@ -211,6 +226,19 @@ button,input{font:inherit;color:inherit}
 .menu-head.sun{background:var(--sun)}
 .menu-head.lilac{background:var(--lilac)}
 .menu-head.pink{background:var(--pink)}
+/* Backup tools sit at the very bottom, as one row. */
+.backup{max-width:640px;width:100%;margin:0 auto}
+.backup .filters{display:flex;flex-wrap:wrap}
+.backup .frow{flex:1 1 180px;justify-content:center;border-bottom:0;border-right:1.5px solid var(--line)}
+.backup .frow:last-child{border-right:0}
+/* The GÖSTER box lets its "more kinds" panel spill over what is below it. */
+.menu.show{overflow:visible;position:relative;z-index:3}
+.menu.show .menu-head{border-radius:calc(var(--r) - 2px) calc(var(--r) - 2px) 0 0}
+.menu.show .filters>:last-child{border-radius:0 0 calc(var(--r) - 2px) calc(var(--r) - 2px)}
+.fmore-wrap{position:relative;display:grid}
+.fmore-wrap>.frow{border-bottom:1.5px solid var(--line)}
+.fmore{position:absolute;top:calc(100% + 4px);left:8px;right:8px;z-index:20;display:grid;overflow:hidden;background:var(--surface);border:var(--bw) solid var(--line);border-radius:12px;box-shadow:3px 4px 0 var(--line)}
+.fmore .frow:last-child{border-bottom:0}
 .rail-col{display:grid;gap:18px;align-content:start;min-width:0}
 .tform{display:flex;gap:8px;padding:10px 12px;border-bottom:1.5px solid var(--line)}
 .tform input{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:10px;padding:6px 10px;font-weight:600;font-size:14px;background:var(--surface)}
@@ -318,6 +346,9 @@ button,input{font:inherit;color:inherit}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}.cat *{animation:none!important}}
 
 @media (max-width:860px){
+  #month-view,#month-view.split{grid-template-columns:minmax(0,1fr)}
+  #month-view:not(.split) .day{display:none}
+  #month-view.split .day{border-left:0;border-top:var(--bw) solid var(--line)}
   .board{grid-template-columns:minmax(0,1fr)}
   .rail{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
   .status{grid-column:1/-1}
@@ -401,8 +432,9 @@ button,input{font:inherit;color:inherit}
         </div>
         <div class="cal-bar">
           <div class="tabs" role="tablist">
-            <button class="tab" role="tab" type="button" data-view="month" id="tab-month">Ay</button>
+            <button class="tab" role="tab" type="button" data-view="f15" id="tab-f15">15 gün</button>
             <button class="tab" role="tab" type="button" data-view="week" id="tab-week">Hafta</button>
+            <button class="tab" role="tab" type="button" data-view="month" id="tab-month">Ay</button>
             <button class="tab" role="tab" type="button" data-view="list" id="tab-list">Liste</button>
           </div>
           <div class="nav" id="nav">
@@ -418,7 +450,7 @@ button,input{font:inherit;color:inherit}
           <div class="dow" aria-hidden="true"><span>Pzt</span><span>Sal</span><span>Çar</span><span>Per</span><span>Cum</span><span>Cmt</span><span>Paz</span></div>
           <div class="grid" id="grid"></div>
         </div>
-        <div class="day" id="day" hidden></div>
+        <div class="day" id="day" inert></div>
       </div>
       <div id="list-view" class="list" hidden></div>
     </section>
@@ -431,21 +463,30 @@ button,input{font:inherit;color:inherit}
         <button id="f-submit" class="btn-add" type="submit">Ekle</button>
       </div>
       <div class="add-more">
-        <div class="rep" role="radiogroup" aria-labelledby="rep-l">
-          <span id="rep-l" class="fl">Tekrar</span>
-          <div class="rep-row">
-            <div class="kchips">
-              <label class="kchip" style="--k:var(--lilac)"><input class="sr" type="radio" name="rep" value="none" checked><span>Tek sefer</span></label>
-              <label class="kchip" style="--k:var(--lilac)"><input class="sr" type="radio" name="rep" value="week"><span>Her hafta</span></label>
-              <label class="kchip" style="--k:var(--lilac)"><input class="sr" type="radio" name="rep" value="month"><span>Her ay</span></label>
-              <label class="kchip" style="--k:var(--lilac)"><input class="sr" type="radio" name="rep" value="year"><span>Her yıl</span></label>
-              <label class="kchip" style="--k:var(--lilac)"><input class="sr" type="radio" name="rep" value="custom"><span>Özel</span></label>
+        <div class="pickers">
+          <div class="picker">
+            <span id="kinds-l" class="fl">Tür</span>
+            <button type="button" class="pick-btn" id="kind-btn" aria-expanded="false" aria-controls="kind-pop"><span class="sw" id="kind-sw"></span><span id="kind-name">Sınav</span><span aria-hidden="true">▾</span></button>
+            <div class="pop" id="kind-pop" hidden><div class="kchips" id="kchips" role="radiogroup" aria-labelledby="kinds-l"></div></div>
+          </div>
+          <div class="picker">
+            <span id="rep-l" class="fl">Tekrar</span>
+            <button type="button" class="pick-btn" id="rep-btn" aria-expanded="false" aria-controls="rep-pop"><span aria-hidden="true">↻</span><span id="rep-name">Tek sefer</span><span aria-hidden="true">▾</span></button>
+            <div class="pop" id="rep-pop" role="radiogroup" aria-labelledby="rep-l" hidden>
+              <div class="kchips">
+                <label class="kchip" style="--k:var(--lilac)"><input class="sr" type="radio" name="rep" value="none" checked><span>Tek sefer</span></label>
+                <label class="kchip" style="--k:var(--lilac)"><input class="sr" type="radio" name="rep" value="week"><span>Her hafta</span></label>
+                <label class="kchip" style="--k:var(--lilac)"><input class="sr" type="radio" name="rep" value="month"><span>Her ay</span></label>
+                <label class="kchip" style="--k:var(--lilac)"><input class="sr" type="radio" name="rep" value="year"><span>Her yıl</span></label>
+                <label class="kchip" style="--k:var(--lilac)"><input class="sr" type="radio" name="rep" value="custom"><span>Özel</span></label>
+              </div>
+              <span class="rep-custom" id="rep-custom" hidden>
+                Her <input id="r-n" type="number" min="1" max="99" value="2" aria-label="Kaç">
+                <select id="r-unit" aria-label="Birim"><option value="day">günde</option><option value="week" selected>haftada</option><option value="month">ayda</option><option value="year">yılda</option></select> bir
+              </span>
+              <label class="fld fld-date" id="rep-until-f" hidden><span class="fl">Bitiş (isteğe bağlı)</span><input id="r-until" type="date"></label>
+              <button type="button" class="small-btn sun" id="rep-done">Tamam</button>
             </div>
-            <span class="rep-custom" id="rep-custom" hidden>
-              Her <input id="r-n" type="number" min="1" max="99" value="2" aria-label="Kaç">
-              <select id="r-unit" aria-label="Birim"><option value="day">günde</option><option value="week" selected>haftada</option><option value="month">ayda</option><option value="year">yılda</option></select> bir
-            </span>
-            <label class="fld fld-date" id="rep-until-f" hidden><span class="fl">Bitiş (isteğe bağlı)</span><input id="r-until" type="date"></label>
           </div>
         </div>
         <div class="fld-dategroup">
@@ -454,11 +495,6 @@ button,input{font:inherit;color:inherit}
         </div>
         <label class="fld fld-time"><span class="fl">Saat</span><input id="f-time" placeholder="18.30" maxlength="20"></label>
         <label class="fld grow"><span class="fl">Yer</span><input id="f-place" placeholder="KKM A Salonu" maxlength="80"></label>
-        <div class="kinds">
-          <span id="kinds-l" class="fl">Tür</span>
-          <button type="button" class="kind-btn" id="kind-btn" aria-expanded="false" aria-controls="kchips"><span class="sw" id="kind-sw"></span><span id="kind-name">Sınav</span><span aria-hidden="true">▾</span></button>
-          <div class="kchips" id="kchips" role="radiogroup" aria-labelledby="kinds-l" hidden></div>
-        </div>
         <button id="f-cancel" class="link-btn" type="button" hidden>Vazgeç</button>
       </div>
       <p id="f-msg" class="msg" role="status" hidden></p>
@@ -466,8 +502,8 @@ button,input{font:inherit;color:inherit}
 
     <aside class="rail">
       <div class="rail-col">
-      <div class="menu sticker">
-        <div class="menu-head">GÖSTER ✦</div>
+      <div class="menu sticker show">
+        <div class="menu-head">GÖSTER</div>
         <div class="filters" id="filters"></div>
         <form id="kform" class="kform" autocomplete="off" novalidate hidden>
           <label class="fld"><span class="fl">Yeni tür</span><input id="k-name" placeholder="Örn. Kulüp" maxlength="20"></label>
@@ -477,15 +513,6 @@ button,input{font:inherit;color:inherit}
             <button class="link-btn" id="k-cancel" type="button">Vazgeç</button>
           </div>
         </form>
-      </div>
-      <div class="menu sticker">
-        <div class="menu-head lilac">YEDEK</div>
-        <div class="filters">
-          <button class="frow" id="b-export" type="button">Yedek indir</button>
-          <button class="frow" id="b-import" type="button">Yedekten yükle</button>
-          <button class="frow" id="b-ics" type="button">Telefon takvimine aktar (.ics)</button>
-        </div>
-        <input type="file" id="b-file" accept=".json,application/json" hidden>
       </div>
       </div>
       <div class="menu sticker">
@@ -529,6 +556,16 @@ button,input{font:inherit;color:inherit}
       </div>
     </form>
   </section>
+
+  <div class="menu sticker backup">
+    <div class="menu-head lilac">YEDEK</div>
+    <div class="filters">
+      <button class="frow" id="b-export" type="button">Yedek indir</button>
+      <button class="frow" id="b-import" type="button">Yedekten yükle</button>
+      <button class="frow" id="b-ics" type="button">Telefon takvimine aktar (.ics)</button>
+    </div>
+    <input type="file" id="b-file" accept=".json,application/json" hidden>
+  </div>
 </div>
 <div class="toast" id="toast" role="status" hidden></div>
 
@@ -576,8 +613,10 @@ button,input{font:inherit;color:inherit}
   const S = {
     events: [], occ: [], loaded: false, db: null, readOnly: false, base: null,
     kinds: [], kindForm: false, kindEdit: false, kindAsk: null,
-    view: ["list", "week"].includes(saved("tk.view")) ? saved("tk.view") : "month",
-    filter: saved("tk.filter") || "all",
+    view: ["list", "week", "month", "f15"].includes(saved("tk.view2")) ? saved("tk.view2") : "f15",
+    f15Start: null,
+    picks: new Set((() => { try { const v = JSON.parse(saved("tk.picks") || "[]"); return Array.isArray(v) ? v : []; } catch (e) { return []; } })()),
+    moreOpen: false, dayOpen: false,
     showPast: false, ym: [now.getFullYear(), now.getMonth()], sel: TODAY, editing: null,
     courses: [], courseForm: null
   };
@@ -661,7 +700,24 @@ button,input{font:inherit;color:inherit}
 
   const kindId = e => KINDS[e.kind] ? e.kind : "diger";
   const kindOf = e => KINDS[kindId(e)];
-  const visible = () => S.occ.filter(e => S.filter === "all" || !KINDS[S.filter] || kindId(e) === S.filter);
+  // Filters are a set of picked kinds plus "ders" (the weekly classes). Nothing picked shows every event and no classes;
+  // otherwise only the picked kinds show, and classes appear in the calendar when "ders" is picked.
+  const visible = () => {
+    const ks = [...S.picks].filter(k => KINDS[k]);
+    return S.occ.filter(e => !S.picks.size || ks.includes(kindId(e)));
+  };
+  function coursesOn(k, always) {
+    if (!always && !S.picks.has("ders")) return [];
+    const wd = dow(parseKey(k));
+    return wd < 5 ? S.courses.filter(c => c.day === wd && (!c.until || c.until >= k)) : [];
+  }
+  function togglePick(k) {
+    if (k === "all") S.picks.clear();
+    else if (S.picks.has(k)) S.picks.delete(k);
+    else S.picks.add(k);
+    saved("tk.picks", JSON.stringify([...S.picks]));
+    render();
+  }
   const writable = () => !!S.db && !!S.base && !S.readOnly;
   // Everything is kept in this browser's localStorage; nothing leaves the device.
   const STORE_KEY = "guz-takvim.v1";
@@ -790,6 +846,7 @@ button,input{font:inherit;color:inherit}
     const total = Math.ceil((lead + dim) / 7) * 7;
     const by = groupByDay(visible());
     const grid = $("#grid");
+    grid.className = "grid";
     grid.replaceChildren();
     for (let i = 0; i < total; i++) {
       const d = new Date(y, m, 1 - lead + i);
@@ -798,31 +855,62 @@ button,input{font:inherit;color:inherit}
   }
 
   // One day box; month view shows up to three events, week view shows them all.
-  function dayCell(d, evs, clash, limit, out) {
-    const k = keyOf(d), c = el("button", "cell" + (limit ? "" : " wk"));
+  function dayCell(d, evs, clash, limit, out, showDow = false) {
+    const k = keyOf(d), c = el("button", "cell" + (limit ? "" : " wk") + (showDow ? " f15" : ""));
     c.type = "button";
     if (out) c.classList.add("out");
     if (k === TODAY) c.classList.add("today");
     if (k < TODAY) c.classList.add("past");
-    c.setAttribute("aria-pressed", String(k === S.sel));
+    c.setAttribute("aria-pressed", String(S.dayOpen && k === S.sel));
     c.setAttribute("aria-label", longDate(k) + (evs.length ? `, ${evs.length} etkinlik` : ""));
     const top = el("span", "cell-top");
     top.append(el("span", "num", String(d.getDate())));
+    if (showDow) top.append(el("span", "wd", SHORT[dow(d)] + (d.getDate() === 1 ? ` · ${MONTHS[d.getMonth()]}` : "")));
     if (evs.some(e => clash.has(e.id))) { const w = el("span", "warn", "!"); w.title = "Çakışma var"; top.append(w); }
     c.append(top);
-    if (evs.length) {
-      const ps = el("span", "pills"), shown = limit ? evs.slice(0, limit) : evs;
-      for (const e of shown) {
-        const p = el("span", "pill" + (e.tentative ? " tent" : ""), [e.time, e.title].filter(Boolean).join(" "));
-        p.style.setProperty("--k", kindOf(e).c);
+    // Events and (when picked) classes share the pills, in time order.
+    const items = [
+      ...evs.map(e => [sortMin(e), [e.time, e.title].filter(Boolean).join(" "), kindOf(e).c, e.tentative ? " tent" : ""]),
+      ...coursesOn(k).map(cs => [cs.start, `${hhmm(cs.start)} ${cs.code}`, COLORS[cs.color], " course"])
+    ].sort((x, y) => x[0] - y[0]);
+    if (items.length) {
+      const ps = el("span", "pills"), shown = limit ? items.slice(0, limit) : items;
+      for (const [, text, color, extra] of shown) {
+        const p = el("span", "pill" + extra, text);
+        p.style.setProperty("--k", color);
         ps.append(p);
       }
-      if (evs.length > shown.length) ps.append(el("span", "more", `+${evs.length - shown.length}`));
+      if (items.length > shown.length) ps.append(el("span", "more", `+${items.length - shown.length}`));
       c.append(ps);
     }
     c.onclick = () => openDay(k);
     return c;
   }
+
+  // 15 gün: fifteen days in a row, starting today unless moved with the arrows; five columns, three rows.
+  function f15Start() {
+    if (!S.f15Start) S.f15Start = TODAY;
+    return parseKey(S.f15Start);
+  }
+  function renderF15(clash) {
+    const s = f15Start(), e = new Date(s.getFullYear(), s.getMonth(), s.getDate() + 14);
+    $("#title").textContent = s.getMonth() === e.getMonth()
+      ? `${s.getDate()}–${e.getDate()} ${MONTHS[s.getMonth()]} ${s.getFullYear()}`
+      : `${s.getDate()} ${MONTHS[s.getMonth()]} – ${e.getDate()} ${MONTHS[e.getMonth()]} ${e.getFullYear()}`;
+    const by = groupByDay(visible()), grid = $("#grid");
+    grid.className = "grid g15";
+    grid.replaceChildren();
+    for (let i = 0; i < 15; i++) {
+      const d = new Date(s.getFullYear(), s.getMonth(), s.getDate() + i);
+      grid.append(dayCell(d, by[keyOf(d)] || [], clash, 4, false, true));
+    }
+  }
+  const shiftF15 = n => {
+    const s = f15Start(), x = new Date(s.getFullYear(), s.getMonth(), s.getDate() + 15 * n);
+    S.f15Start = keyOf(x);
+    S.ym = [x.getFullYear(), x.getMonth()];
+    render();
+  };
 
   // The week shown is the Monday-to-Sunday week that contains the selected day.
   function weekStart(k) { const d = parseKey(k); return new Date(d.getFullYear(), d.getMonth(), d.getDate() - dow(d)); }
@@ -832,6 +920,7 @@ button,input{font:inherit;color:inherit}
       ? `${s.getDate()}–${e.getDate()} ${MONTHS[s.getMonth()]} ${s.getFullYear()}`
       : `${s.getDate()} ${MONTHS[s.getMonth()]} – ${e.getDate()} ${MONTHS[e.getMonth()]} ${e.getFullYear()}`;
     const by = groupByDay(visible()), grid = $("#grid");
+    grid.className = "grid";
     grid.replaceChildren();
     for (let i = 0; i < 7; i++) {
       const d = new Date(s.getFullYear(), s.getMonth(), s.getDate() + i);
@@ -839,20 +928,25 @@ button,input{font:inherit;color:inherit}
     }
   }
 
-  // Clicking a day (or "Bugün") swaps the grid for that day's program: its events and classes, in time order.
-  function openDay(k) {
+  // Clicking a day (or "Bugün") slides that day's program in on the right; the calendar shrinks and fades beside it.
+  // Clicking the open day again, the close button or Esc slides it away.
+  function openDay(k, toggle = true) {
+    if (toggle && S.dayOpen && S.sel === k && S.view !== "list") { closeDay(); return; }
     const d = parseKey(k);
     S.sel = k;
     S.ym = [d.getFullYear(), d.getMonth()];
-    S.view = "day";
+    if (S.view === "list") S.view = "f15";
+    if (S.view === "f15") {
+      const s = f15Start(), dd = Math.round((d - s) / 864e5);
+      if (dd < 0 || dd > 14) S.f15Start = k;
+    }
+    S.dayOpen = true;
     if (!S.editing) $("#f-date").value = k;
     render();
   }
-  function renderDayView(clash) {
-    const d = parseKey(S.sel);
-    $("#title").textContent = `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}, ${DAYS[dow(d)]}`;
-    renderDay(groupByDay(visible()), clash);
-  }
+  function closeDay() { S.dayOpen = false; render(); }
+  function shiftDay(n) { const d = parseKey(S.sel); openDay(keyOf(new Date(d.getFullYear(), d.getMonth(), d.getDate() + n)), false); }
+  document.addEventListener("keydown", ev => { if (ev.key === "Escape" && S.dayOpen) closeDay(); });
   function courseCard(c) {
     const li = el("li", "ev course"), metu = c.start % 60 === 40;
     li.style.setProperty("--k", COLORS[c.color]);
@@ -875,17 +969,23 @@ button,input{font:inherit;color:inherit}
   function renderDay(by, clash) {
     const box = $("#day"), k = S.sel, wd = dow(parseKey(k));
     box.replaceChildren();
-    const head = el("div", "day-head");
-    head.append(el("span", "rel", rel(k)));
+    const head = el("div", "day-head"), nav = el("div", "day-nav");
+    const btn = (text, label, fn) => { const b = el("button", "icon-btn", text); b.type = "button"; b.setAttribute("aria-label", label); b.onclick = fn; nav.append(b); };
+    btn("‹", "Önceki gün", () => shiftDay(-1));
+    btn("›", "Sonraki gün", () => shiftDay(1));
+    btn("×", "Gün programını kapat", closeDay);
+    const t = el("div", "day-title");
+    t.append(el("h3", null, longDate(k)), el("span", "rel", rel(k)));
+    head.append(t, nav);
+    box.append(head);
     if (writable()) {
       const b = el("button", "small-btn", "+ Bu güne ekle");
       b.type = "button";
       b.onclick = () => { resetForm(); $("#f-date").value = k; focusForm(); };
-      head.append(b);
+      box.append(b);
     }
-    box.append(head);
     const evs = by[k] || [];
-    const cs = wd < 5 ? S.courses.filter(c => c.day === wd && (!c.until || c.until >= k)) : [];
+    const cs = coursesOn(k, true);
     const items = [...evs.map(e => [sortMin(e), () => card(e, false, clash)]), ...cs.map(c => [c.start, () => courseCard(c)])]
       .sort((x, y) => x[0] - y[0]);
     if (!S.loaded) box.append(el("p", "empty", "Etkinlikler yükleniyor…"));
@@ -929,29 +1029,43 @@ button,input{font:inherit;color:inherit}
     }
   }
 
+  // Hepsi, Sınav, Prova and Ders programı always stay on top; the other kinds sit in a panel that opens over the page.
+  const TOP_KINDS = ["sinav", "prova"];
   function renderFilters() {
     const f = $("#filters"), counts = {};
     f.replaceChildren();
     S.events.forEach(e => { counts[kindId(e)] = (counts[kindId(e)] || 0) + 1; });
-    const rows = [["all", "Hepsi", null, S.events.length]].concat(Object.entries(KINDS).map(([k, v]) => [k, v.label, v.c, counts[k] || 0]));
-    for (const [k, label, c, n] of rows) {
-      if (S.kindEdit && k !== "all" && k !== "diger") { f.append(kindEditRow(k, label, c, n)); continue; }
-      if (k === "diger" && !n && S.filter !== "diger") continue;
+    const row = (k, label, c, n) => {
       const b = el("button", "frow");
       b.type = "button";
-      b.setAttribute("aria-pressed", String(S.filter === k));
-      if (c) { const s = el("span", "sw"); s.style.setProperty("--k", c); b.append(s); }
+      b.setAttribute("aria-pressed", String(k === "all" ? !S.picks.size : S.picks.has(k)));
+      if (c) { const sw = el("span", "sw"); sw.style.setProperty("--k", c); b.append(sw); }
       b.append(el("span", null, label), el("span", "cnt", String(n)));
-      b.onclick = () => { S.filter = k; saved("tk.filter", k); render(); };
-      f.append(b);
+      b.onclick = () => togglePick(k);
+      return b;
+    };
+    const kinds = Object.entries(KINDS).map(([k, v]) => [k, v.label, v.c, counts[k] || 0]);
+    if (S.kindEdit) {
+      for (const [k, label, c, n] of kinds) if (k !== "diger") f.append(kindEditRow(k, label, c, n));
+    } else {
+      f.append(row("all", "Hepsi", null, S.events.length));
+      for (const r of kinds) if (TOP_KINDS.includes(r[0])) f.append(row(...r));
+      f.append(row("ders", "Ders programı", "var(--lilac)", new Set(S.courses.map(c => c.code)).size));
+      const rest = kinds.filter(([k, , , n]) => !TOP_KINDS.includes(k) && (k !== "diger" || n || S.picks.has(k)));
+      if (rest.length) {
+        const wrap = el("div", "fmore-wrap"), t = el("button", "frow add", S.moreOpen ? "Daha az ▴" : `+ ${rest.length} tür daha ▾`);
+        t.type = "button";
+        t.setAttribute("aria-expanded", String(S.moreOpen));
+        t.onclick = () => { S.moreOpen = !S.moreOpen; render(); };
+        wrap.append(t);
+        if (S.moreOpen) {
+          const panel = el("div", "fmore");
+          rest.forEach(r => panel.append(row(...r)));
+          wrap.append(panel);
+        }
+        f.append(wrap);
+      }
     }
-    const p = el("button", "frow");
-    p.type = "button";
-    const sw = el("span", "sw");
-    sw.style.setProperty("--k", "var(--lilac)");
-    p.append(sw, el("span", null, "Ders programı"), el("span", "cnt", String(new Set(S.courses.map(c => c.code)).size)));
-    p.onclick = () => $("#program-view").scrollIntoView({behavior: reduceMotion ? "auto" : "smooth", block: "start"});
-    f.append(p);
     if (writable() && !S.kindForm && !S.kindEdit) {
       const a = el("button", "frow add", "+ Tür ekle");
       a.type = "button";
@@ -961,7 +1075,7 @@ button,input{font:inherit;color:inherit}
     if (writable() && !S.kindForm) {
       const t = el("button", "frow add", S.kindEdit ? "Bitti" : "Türleri düzenle");
       t.type = "button";
-      t.onclick = () => { S.kindEdit = !S.kindEdit; S.kindAsk = null; render(); };
+      t.onclick = () => { S.kindEdit = !S.kindEdit; S.kindAsk = null; S.moreOpen = false; render(); };
       f.append(t);
     }
     renderKindForm();
@@ -996,10 +1110,11 @@ button,input{font:inherit;color:inherit}
     $("#kind-btn").disabled = !writable();
   }
   function foldKinds(open) {
-    $("#kchips").hidden = !open;
+    $("#kind-pop").hidden = !open;
     $("#kind-btn").setAttribute("aria-expanded", String(open));
+    if (open) foldRepeat(false);
   }
-  $("#kind-btn").onclick = () => foldKinds($("#kchips").hidden);
+  $("#kind-btn").onclick = () => foldKinds($("#kind-pop").hidden);
   $("#kchips").addEventListener("change", () => { syncKindBtn(); foldKinds(false); });
 
   const kform = $("#kform");
@@ -1076,7 +1191,7 @@ button,input{font:inherit;color:inherit}
     if (BASE_KINDS[k]) store.hidden = [...new Set([...store.hidden, k])];
     else store.kinds = store.kinds.filter(x => x.id !== k);
     S.kindAsk = null;
-    if (S.filter === k) { S.filter = "all"; saved("tk.filter", "all"); }
+    if (S.picks.delete(k)) saved("tk.picks", JSON.stringify([...S.picks]));
     const text = dropped ? `${label} ve ${dropped} etkinliği silindi` : `${label} silindi`;
     persist().then(
       () => toast(text, {label: "Geri al", run: () => { store = JSON.parse(before); persist().then(() => toast("Geri alındı"), writeFailed); }}),
@@ -1158,10 +1273,11 @@ button,input{font:inherit;color:inherit}
   function render() {
     S.occ = occurrences();
     const clash = clashes(S.occ);
-    const v = S.view, unit = v === "week" ? "hafta" : v === "day" ? "gün" : "ay";
+    const v = S.view, unit = v === "week" ? "hafta" : v === "f15" ? "15 gün" : "ay", open = S.dayOpen && v !== "list";
+    $(".dow").hidden = v === "f15";
     $("#month-view").hidden = v === "list";
-    $(".month").hidden = v === "day";
-    $("#day").hidden = v !== "day";
+    $("#month-view").classList.toggle("split", open);
+    $("#day").inert = !open;
     $("#list-view").hidden = v !== "list";
     $("#nav").hidden = v === "list";
     $("#prev").setAttribute("aria-label", `Önceki ${unit}`);
@@ -1173,7 +1289,8 @@ button,input{font:inherit;color:inherit}
     renderNext();
     renderTodos();
     renderBanner();
-    v === "list" ? renderList(clash) : v === "week" ? renderWeek(clash) : v === "day" ? renderDayView(clash) : renderMonth(clash);
+    v === "list" ? renderList(clash) : v === "week" ? renderWeek(clash) : v === "f15" ? renderF15(clash) : renderMonth(clash);
+    if (open) renderDay(groupByDay(visible()), clash);
     syncKindBtn();
     renderProgram();
     renderStatus();
@@ -1191,11 +1308,30 @@ button,input{font:inherit;color:inherit}
   }
   const repChoice = () => (form.querySelector('input[name="rep"]:checked') || {}).value || "none";
   function syncRepeat() {
-    const v = repChoice();
+    const v = repChoice(), r = readRepeat();
     $("#rep-custom").hidden = v !== "custom";
     $("#rep-until-f").hidden = v === "none";
+    let name = r ? repLabel(r) : "tek sefer";
+    if (r && r.until) { const u = parseKey(r.until); name += ` · ${u.getDate()} ${MONTHS[u.getMonth()]}'a kadar`; }
+    $("#rep-name").textContent = name.charAt(0).toLocaleUpperCase("tr") + name.slice(1);
   }
-  form.querySelectorAll('input[name="rep"]').forEach(r => { r.onchange = syncRepeat; });
+  function foldRepeat(open) {
+    $("#rep-pop").hidden = !open;
+    $("#rep-btn").setAttribute("aria-expanded", String(open));
+    if (open) foldKinds(false);
+  }
+  form.querySelectorAll('input[name="rep"]').forEach(r => { r.onchange = () => { syncRepeat(); if (r.value === "none") foldRepeat(false); }; });
+  ["r-n", "r-unit", "r-until"].forEach(id => $("#" + id).addEventListener("input", syncRepeat));
+  $("#rep-btn").onclick = () => foldRepeat($("#rep-pop").hidden);
+  document.addEventListener("click", ev => {
+    if (S.moreOpen && !ev.target.closest(".fmore-wrap")) { S.moreOpen = false; renderFilters(); }
+  });
+  $("#rep-done").onclick = () => foldRepeat(false);
+  // A click anywhere outside an open panel, or Esc, folds it again.
+  document.addEventListener("click", ev => {
+    if (!ev.target.closest(".picker")) { foldKinds(false); foldRepeat(false); }
+  });
+  document.addEventListener("keydown", ev => { if (ev.key === "Escape") { foldKinds(false); foldRepeat(false); } });
 
   function readRepeat() {
     const v = repChoice();
@@ -1513,7 +1649,7 @@ button,input{font:inherit;color:inherit}
   $("#cf-new").onclick = () => openCourse(null);
 
   /* navigation */
-  document.querySelectorAll(".tab").forEach(t => { t.onclick = () => { S.view = t.dataset.view; saved("tk.view", S.view); render(); }; });
+  document.querySelectorAll(".tab").forEach(t => { t.onclick = () => { S.view = t.dataset.view; saved("tk.view2", S.view); render(); }; });
   const shiftMonth = n => { const d = new Date(S.ym[0], S.ym[1] + n, 1); S.ym = [d.getFullYear(), d.getMonth()]; render(); };
   const shiftWeek = n => {
     const d = parseKey(S.sel), x = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 7 * n);
@@ -1522,10 +1658,9 @@ button,input{font:inherit;color:inherit}
     if (!S.editing) $("#f-date").value = S.sel;
     render();
   };
-  const shiftDay = n => { const d = parseKey(S.sel); openDay(keyOf(new Date(d.getFullYear(), d.getMonth(), d.getDate() + n))); };
-  $("#prev").onclick = () => S.view === "week" ? shiftWeek(-1) : S.view === "day" ? shiftDay(-1) : shiftMonth(-1);
-  $("#next").onclick = () => S.view === "week" ? shiftWeek(1) : S.view === "day" ? shiftDay(1) : shiftMonth(1);
-  $("#today-btn").onclick = () => openDay(TODAY);
+  $("#prev").onclick = () => S.view === "week" ? shiftWeek(-1) : S.view === "f15" ? shiftF15(-1) : shiftMonth(-1);
+  $("#next").onclick = () => S.view === "week" ? shiftWeek(1) : S.view === "f15" ? shiftF15(1) : shiftMonth(1);
+  $("#today-btn").onclick = () => openDay(TODAY, false);
   $("#past-btn").onclick = () => { S.showPast = !S.showPast; render(); };
 
   $("#f-date").value = TODAY;
@@ -1735,6 +1870,33 @@ button,input{font:inherit;color:inherit}
     const target = ev.target.closest(SOUND_TARGET);
     if (target && !target.disabled) clickSound();
   });
+  // A purr: about 24 soft, low-passed breaths of noise per second, swelling in and out over under a second.
+  let lastPurr = 0;
+  function purr() {
+    if (!soundOn || !audio || audio.state !== "running" || performance.now() - lastPurr < 1500) return;
+    lastPurr = performance.now();
+    try {
+      const a = audio, sr = a.sampleRate, dur = 0.8, len = Math.floor(sr * dur);
+      const buf = a.createBuffer(1, len, sr), ch = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) {
+        const t = i / sr, rate = 23 + 3 * Math.sin(t * 5);
+        const beat = Math.pow(Math.max(0, Math.sin(2 * Math.PI * rate * t)), 4);
+        const env = Math.min(1, t / 0.12) * Math.min(1, (dur - t) / 0.3);
+        ch[i] = (Math.random() * 2 - 1) * beat * env;
+      }
+      const src = a.createBufferSource(), lp = a.createBiquadFilter(), g = a.createGain();
+      src.buffer = buf;
+      lp.type = "lowpass";
+      lp.frequency.value = 300;
+      lp.Q.value = 0.8;
+      g.gain.value = 1.6;
+      src.connect(lp).connect(g).connect(out);
+      src.start();
+    } catch (e) {}
+  }
+  const catEl = $(".cat");
+  catEl.addEventListener("pointerover", ev => { if (!catEl.contains(ev.relatedTarget)) purr(); });
+
   const soundBtn = $("#sound-btn");
   function syncSound() {
     soundBtn.setAttribute("aria-pressed", String(soundOn));

@@ -173,6 +173,19 @@ button,input{font:inherit;color:inherit}
 .menu-head{background:var(--teal);color:var(--on-tint);font:600 18px var(--f-display);letter-spacing:.06em;text-align:center;padding:10px;border-bottom:var(--bw) solid var(--line)}
 .menu-head.sun{background:var(--sun)}
 .menu-head.lilac{background:var(--lilac)}
+.menu-head.pink{background:var(--pink)}
+.rail-col{display:grid;gap:18px;align-content:start;min-width:0}
+.tform{display:flex;gap:8px;padding:10px 12px;border-bottom:1.5px solid var(--line)}
+.tform input{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:10px;padding:6px 10px;font-weight:600;font-size:14px;background:var(--surface)}
+.tform input::placeholder{color:var(--muted);font-weight:500}
+.todos{list-style:none;margin:0;padding:0}
+.todo{display:flex;align-items:center;gap:10px;padding:8px 10px 8px 12px;border-bottom:1.5px solid var(--line)}
+.todo input{flex:none;width:17px;height:17px;margin:0;accent-color:var(--teal)}
+.todo span{flex:1;min-width:0;font-weight:700;overflow-wrap:anywhere}
+.todo.done span{text-decoration:line-through;color:var(--muted)}
+.tdel{flex:none;border:0;border-radius:999px;background:none;width:26px;height:26px;font-weight:800;font-size:16px;line-height:1;color:var(--muted);cursor:pointer}
+.todos .empty{padding:10px 12px;color:var(--muted);font-weight:700}
+.tclear{margin:8px 12px 10px;font-size:13px}
 .filters{display:grid}
 .frow{display:flex;align-items:center;gap:10px;border:0;border-bottom:1.5px solid var(--line);background:var(--surface);font-weight:700;font-size:15px;padding:10px 14px;cursor:pointer;text-align:left}
 .frow:last-child{border-bottom:0}
@@ -251,12 +264,13 @@ button,input{font:inherit;color:inherit}
 /* Hovered boxes and buttons lift toward the viewer: they move up-left and their hard shadow grows.
    Buttons that sit flush inside a card rise above their neighbours with z-index. */
 @media (hover:hover){
-  .ev,.cell,.tt-block,.rail .menu,.banner,.small-btn,.icon-btn,.btn-add,.tab,.frow,.nx,.bn-row,.kchip span,.kcolors span,.kdel-btn,.ev-del,.toast button,.link-btn,.ev-ask .small-btn{transition:transform .14s,box-shadow .14s,background-color .14s}
+  .ev,.cell,.tt-block,.tdel,.rail .menu,.banner,.small-btn,.icon-btn,.btn-add,.tab,.frow,.nx,.bn-row,.kchip span,.kcolors span,.kdel-btn,.ev-del,.toast button,.link-btn,.ev-ask .small-btn{transition:transform .14s,box-shadow .14s,background-color .14s}
   .ev:hover{transform:translate(-2px,-3px);box-shadow:5px 7px 0 var(--line)}
   .cell:hover{background:var(--surface);transform:translate(-2px,-3px);box-shadow:4px 5px 0 var(--line);position:relative;z-index:1}
   .tt-block:hover{transform:translate(-2px,-3px);box-shadow:4px 6px 0 var(--line);z-index:2}
   .rail .menu:hover,.banner:hover{transform:translate(-2px,-3px);box-shadow:6px 8px 0 var(--line)}
   .small-btn:hover,.icon-btn:hover,.kdel-btn:hover,.toast button:hover{transform:translate(-1px,-2px);box-shadow:3px 4px 0 var(--line)}
+  .tdel:hover{transform:translate(-1px,-2px);box-shadow:2px 3px 0 var(--line);color:var(--text)}
   .kchip span:hover,.kcolors span:hover{transform:translate(-1px,-2px);box-shadow:2px 3px 0 var(--line)}
   .btn-add:hover,.tab:hover,.frow:hover,.nx:hover,.bn-row:hover{transform:translate(-2px,-2px);box-shadow:3px 3px 0 var(--line);position:relative;z-index:1}
   .ev-del:hover{transform:translate(-1px,-2px);box-shadow:2px 3px 0 var(--line)}
@@ -378,6 +392,7 @@ button,input{font:inherit;color:inherit}
     </section>
 
     <aside class="rail">
+      <div class="rail-col">
       <div class="menu sticker">
         <div class="menu-head">GÖSTER ✦</div>
         <div class="filters" id="filters"></div>
@@ -391,10 +406,6 @@ button,input{font:inherit;color:inherit}
         </form>
       </div>
       <div class="menu sticker">
-        <div class="menu-head sun">SIRADAKİ</div>
-        <div class="next-box" id="next-box"></div>
-      </div>
-      <div class="menu sticker">
         <div class="menu-head lilac">YEDEK</div>
         <div class="filters">
           <button class="frow" id="b-export" type="button">Yedek indir</button>
@@ -402,6 +413,21 @@ button,input{font:inherit;color:inherit}
           <button class="frow" id="b-ics" type="button">Telefon takvimine aktar (.ics)</button>
         </div>
         <input type="file" id="b-file" accept=".json,application/json" hidden>
+      </div>
+      </div>
+      <div class="menu sticker">
+        <div class="menu-head sun">SIRADAKİ</div>
+        <div class="next-box" id="next-box"></div>
+      </div>
+      <div class="menu sticker">
+        <div class="menu-head pink">YAPILACAKLAR</div>
+        <form id="tform" class="tform" autocomplete="off" novalidate>
+          <label class="sr" for="t-text">Yapılacak</label>
+          <input id="t-text" placeholder="Ne yapılacak?" maxlength="120">
+          <button class="small-btn sun" type="submit">Ekle</button>
+        </form>
+        <ul class="todos" id="todos"></ul>
+        <button class="link-btn tclear" id="t-clear" type="button" hidden>Tamamlananları temizle</button>
       </div>
       <p class="status" id="status">Yükleniyor…</p>
     </aside>
@@ -566,13 +592,18 @@ button,input{font:inherit;color:inherit}
   const writable = () => !!S.db && !!S.base && !S.readOnly;
   // Everything is kept in this browser's localStorage; nothing leaves the device.
   const STORE_KEY = "guz-takvim.v1";
-  let store = {events: {}, courses: {}, kinds: [], hidden: []};
+  let store = {events: {}, courses: {}, kinds: [], hidden: [], todos: []};
   function loadStore() {
     const raw = localStorage.getItem(STORE_KEY);
     const d = raw ? JSON.parse(raw) : {};
     const obj = x => x && typeof x === "object" && !Array.isArray(x) ? x : {};
     return {events: obj(d.events), courses: obj(d.courses), kinds: Array.isArray(d.kinds) ? d.kinds : [],
-      hidden: Array.isArray(d.hidden) ? d.hidden.filter(k => BASE_KINDS[k] && k !== "diger") : []};
+      hidden: Array.isArray(d.hidden) ? d.hidden.filter(k => BASE_KINDS[k] && k !== "diger") : [],
+      todos: cleanTodos(d.todos)};
+  }
+  function cleanTodos(raw) {
+    return (Array.isArray(raw) ? raw : []).filter(t => t && typeof t.id === "string" && typeof t.text === "string")
+      .map(t => ({id: t.id, text: t.text.slice(0, 120), done: !!t.done, created: Number(t.created) || 0}));
   }
   function cleanKinds(raw) {
     return raw.filter(k => k && typeof k.id === "string" && typeof k.label === "string" && !BASE_KINDS[k.id])
@@ -999,6 +1030,7 @@ button,input{font:inherit;color:inherit}
     renderKindChips();
     renderFilters();
     renderNext();
+    renderTodos();
     renderBanner();
     v === "list" ? renderList(clash) : renderMonth(clash);
     renderProgram();
@@ -1346,6 +1378,51 @@ button,input{font:inherit;color:inherit}
   $("#f-date").value = TODAY;
   render();
 
+  /* to-do list: kept with the calendar data, so backups carry it too */
+  function renderTodos() {
+    const ul = $("#todos"), off = !writable();
+    ul.replaceChildren();
+    const list = [...store.todos].sort((a, b) => (a.done - b.done) || (a.created - b.created));
+    if (!list.length) ul.append(el("li", "empty", "Liste boş."));
+    for (const t of list) {
+      const li = el("li", "todo" + (t.done ? " done" : ""));
+      const cb = el("input");
+      cb.type = "checkbox";
+      cb.checked = t.done;
+      cb.disabled = off;
+      cb.setAttribute("aria-label", t.text);
+      cb.onchange = () => {
+        store.todos = store.todos.map(x => x.id === t.id ? {...x, done: cb.checked} : x);
+        persist().catch(writeFailed);
+      };
+      li.append(cb, el("span", null, t.text));
+      if (!off) {
+        const del = el("button", "tdel", "×");
+        del.type = "button";
+        del.setAttribute("aria-label", `Sil: ${t.text}`);
+        del.onclick = () => removeTodos(x => x.id === t.id, "Silindi");
+        li.append(del);
+      }
+      ul.append(li);
+    }
+    $("#tform").querySelectorAll("input,button").forEach(x => { x.disabled = off; });
+    $("#t-clear").hidden = off || !store.todos.some(t => t.done);
+  }
+  function removeTodos(match, text) {
+    const before = store.todos;
+    store.todos = before.filter(t => !match(t));
+    persist().then(() => toast(text, {label: "Geri al", run: () => { store.todos = before; persist().then(() => toast("Geri alındı"), writeFailed); }}), writeFailed);
+  }
+  $("#tform").addEventListener("submit", ev => {
+    ev.preventDefault();
+    if (!writable()) return;
+    const text = $("#t-text").value.trim();
+    if (!text) { $("#t-text").focus(); return; }
+    store.todos = [...store.todos, {id: newId(), text, done: false, created: Date.now()}];
+    persist().then(() => { $("#t-text").value = ""; $("#t-text").focus(); }, writeFailed);
+  });
+  $("#t-clear").onclick = () => removeTodos(t => t.done, "Tamamlananlar temizlendi");
+
   /* backup: download, restore and calendar export */
   function download(name, text, type) {
     const a = el("a");
@@ -1375,12 +1452,15 @@ button,input{font:inherit;color:inherit}
     const ks = cleanKinds(Array.isArray(d && d.kinds) ? d.kinds : []);
     const okEv = Object.entries(evs).filter(([id, x]) => norm(id, x));
     const okCs = Object.entries(cs).filter(([id, x]) => normCourse(id, x));
-    if (!okEv.length && !okCs.length && !ks.length) { toast("Dosyada takvim verisi yok."); return; }
+    const ts = cleanTodos(d && d.todos);
+    if (!okEv.length && !okCs.length && !ks.length && !ts.length) { toast("Dosyada takvim verisi yok."); return; }
     const before = JSON.stringify(store);
     for (const [id, x] of okEv) store.events[id] = x;
     for (const [id, x] of okCs) store.courses[id] = x;
     const have = new Set(store.kinds.map(k => k.id));
     for (const k of ks) if (!have.has(k.id)) store.kinds.push(k);
+    const haveT = new Set(store.todos.map(t => t.id));
+    for (const t of ts) if (!haveT.has(t.id)) store.todos.push(t);
     persist().then(
       () => toast(`${okEv.length} etkinlik, ${okCs.length} ders yüklendi`),
       err => { store = JSON.parse(before); writeFailed(err); }

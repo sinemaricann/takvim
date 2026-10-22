@@ -615,7 +615,7 @@ button,input{font:inherit;color:inherit}
     kinds: [], kindForm: false, kindEdit: false, kindAsk: null,
     view: ["list", "week", "month", "f15"].includes(saved("tk.view2")) ? saved("tk.view2") : "f15",
     f15Start: null,
-    picks: new Set((() => { try { const v = JSON.parse(saved("tk.picks") || "[]"); return Array.isArray(v) ? v : []; } catch (e) { return []; } })()),
+    picks: (() => { try { const v = JSON.parse(saved("tk.picks2")); return Array.isArray(v) ? new Set(v) : null; } catch (e) { return null; } })(),
     moreOpen: false, dayOpen: false,
     showPast: false, ym: [now.getFullYear(), now.getMonth()], sel: TODAY, editing: null,
     courses: [], courseForm: null
@@ -700,22 +700,22 @@ button,input{font:inherit;color:inherit}
 
   const kindId = e => KINDS[e.kind] ? e.kind : "diger";
   const kindOf = e => KINDS[kindId(e)];
-  // Filters are a set of picked kinds plus "ders" (the weekly classes). Nothing picked shows every event and no classes;
-  // otherwise only the picked kinds show, and classes appear in the calendar when "ders" is picked.
-  const visible = () => {
-    const ks = [...S.picks].filter(k => KINDS[k]);
-    return S.occ.filter(e => !S.picks.size || ks.includes(kindId(e)));
-  };
+  // Filters are the set of shown kinds plus "ders" (the weekly classes in the calendar). At first every kind is shown
+  // and the classes are not; Hepsi shows everything, and pressed again clears the calendar.
+  const allPicks = () => [...Object.keys(KINDS), "ders"];
+  const visible = () => S.occ.filter(e => S.picks.has(kindId(e)));
   function coursesOn(k, always) {
     if (!always && !S.picks.has("ders")) return [];
     const wd = dow(parseKey(k));
     return wd < 5 ? S.courses.filter(c => c.day === wd && (!c.until || c.until >= k)) : [];
   }
+  const allPicked = () => allPicks().every(k => S.picks.has(k));
+  const savePicks = () => saved("tk.picks2", JSON.stringify([...S.picks]));
   function togglePick(k) {
-    if (k === "all") S.picks.clear();
+    if (k === "all") S.picks = allPicked() ? new Set() : new Set(allPicks());
     else if (S.picks.has(k)) S.picks.delete(k);
     else S.picks.add(k);
-    saved("tk.picks", JSON.stringify([...S.picks]));
+    savePicks();
     render();
   }
   const writable = () => !!S.db && !!S.base && !S.readOnly;
@@ -741,6 +741,7 @@ button,input{font:inherit;color:inherit}
   function refresh() {
     S.kinds = cleanKinds(store.kinds);
     buildKinds(S.kinds, store.hidden);
+    if (!S.picks) S.picks = new Set(Object.keys(KINDS));
     S.events = Object.entries(store.events).map(([id, d]) => norm(id, d)).filter(Boolean);
     S.courses = Object.entries(store.courses).map(([id, d]) => normCourse(id, d)).filter(Boolean);
     S.loaded = true;
@@ -871,7 +872,7 @@ button,input{font:inherit;color:inherit}
     // Events and (when picked) classes share the pills, in time order.
     const items = [
       ...evs.map(e => [sortMin(e), [e.time, e.title].filter(Boolean).join(" "), kindOf(e).c, e.tentative ? " tent" : ""]),
-      ...coursesOn(k).map(cs => [cs.start, `${hhmm(cs.start)} ${cs.code}`, COLORS[cs.color], " course"])
+      ...coursesOn(k).map(cs => [cs.start, `${hhmm(cs.start)} ${cs.code}`, "var(--lilac)", " course"])
     ].sort((x, y) => x[0] - y[0]);
     if (items.length) {
       const ps = el("span", "pills"), shown = limit ? items.slice(0, limit) : items;
@@ -949,7 +950,7 @@ button,input{font:inherit;color:inherit}
   document.addEventListener("keydown", ev => { if (ev.key === "Escape" && S.dayOpen) closeDay(); });
   function courseCard(c) {
     const li = el("li", "ev course"), metu = c.start % 60 === 40;
-    li.style.setProperty("--k", COLORS[c.color]);
+    li.style.setProperty("--k", "var(--lilac)");
     const main = el("button", "ev-main");
     main.type = "button";
     main.disabled = !writable();
@@ -1038,7 +1039,7 @@ button,input{font:inherit;color:inherit}
     const row = (k, label, c, n) => {
       const b = el("button", "frow");
       b.type = "button";
-      b.setAttribute("aria-pressed", String(k === "all" ? !S.picks.size : S.picks.has(k)));
+      b.setAttribute("aria-pressed", String(k === "all" ? allPicked() : S.picks.has(k)));
       if (c) { const sw = el("span", "sw"); sw.style.setProperty("--k", c); b.append(sw); }
       b.append(el("span", null, label), el("span", "cnt", String(n)));
       b.onclick = () => togglePick(k);
@@ -1051,7 +1052,7 @@ button,input{font:inherit;color:inherit}
       f.append(row("all", "Hepsi", null, S.events.length));
       for (const r of kinds) if (TOP_KINDS.includes(r[0])) f.append(row(...r));
       f.append(row("ders", "Ders programı", "var(--lilac)", new Set(S.courses.map(c => c.code)).size));
-      const rest = kinds.filter(([k, , , n]) => !TOP_KINDS.includes(k) && (k !== "diger" || n || S.picks.has(k)));
+      const rest = kinds.filter(([k, , , n]) => !TOP_KINDS.includes(k) && (k !== "diger" || n));
       if (rest.length) {
         const wrap = el("div", "fmore-wrap"), t = el("button", "frow add", S.moreOpen ? "Daha az ▴" : `+ ${rest.length} tür daha ▾`);
         t.type = "button";
@@ -1147,6 +1148,8 @@ button,input{font:inherit;color:inherit}
     const id = "k" + Date.now().toString(36);
     try {
       await saveKinds([...S.kinds, {id, label, color}]);
+      S.picks.add(id);
+      savePicks();
       $("#k-name").value = "";
       S.kindForm = false;
       render();
@@ -1191,7 +1194,7 @@ button,input{font:inherit;color:inherit}
     if (BASE_KINDS[k]) store.hidden = [...new Set([...store.hidden, k])];
     else store.kinds = store.kinds.filter(x => x.id !== k);
     S.kindAsk = null;
-    if (S.picks.delete(k)) saved("tk.picks", JSON.stringify([...S.picks]));
+    if (S.picks.delete(k)) savePicks();
     const text = dropped ? `${label} ve ${dropped} etkinliği silindi` : `${label} silindi`;
     persist().then(
       () => toast(text, {label: "Geri al", run: () => { store = JSON.parse(before); persist().then(() => toast("Geri alındı"), writeFailed); }}),
@@ -1271,6 +1274,7 @@ button,input{font:inherit;color:inherit}
 
 
   function render() {
+    if (!S.picks) S.picks = new Set(Object.keys(KINDS));
     S.occ = occurrences();
     const clash = clashes(S.occ);
     const v = S.view, unit = v === "week" ? "hafta" : v === "f15" ? "15 gün" : "ay", open = S.dayOpen && v !== "list";

@@ -1599,6 +1599,8 @@ button,input{font:inherit;color:inherit}
   const SOUND_TARGET = "button, label.kchip, .kcolors label, .tt-block";
   let soundOn = saved("tk.sound") !== "off", audio = null, lastHover = null, lastTick = 0;
   // Everything plays through one soft chain: a low-pass to take the edge off, a compressor so no tap peaks.
+  // The audio context is only created inside a click or key press (Safari and its Dock web apps keep a context
+  // made earlier muted), and a silent one-sample buffer is played then to unlock output.
   let out = null;
   function ctx() {
     if (!audio) {
@@ -1614,29 +1616,46 @@ button,input{font:inherit;color:inherit}
       lp.connect(comp).connect(g).connect(audio.destination);
       out = lp;
     }
-    if (audio.state === "suspended") audio.resume();
     return audio;
   }
-  // A tap is a short burst of band-passed noise that fades in over 1.5 ms instead of starting at full level.
-  function tap(dur, freq, q, gain, delay = 0) {
+  function unlock() {
     if (!soundOn) return;
     try {
-      const a = ctx(), sr = a.sampleRate, len = Math.floor(sr * dur), atk = Math.max(1, Math.floor(sr * 0.0015));
-      const buf = a.createBuffer(1, len, sr), ch = buf.getChannelData(0);
-      for (let i = 0; i < len; i++) ch[i] = (Math.random() * 2 - 1) * Math.min(1, i / atk) * Math.pow(1 - i / len, 3);
-      const src = a.createBufferSource(), bp = a.createBiquadFilter(), g = a.createGain();
-      src.buffer = buf;
-      bp.type = "bandpass";
-      bp.frequency.value = freq;
-      bp.Q.value = q;
-      g.gain.value = gain;
-      src.connect(bp).connect(g).connect(out);
-      src.start(a.currentTime + delay);
+      const a = ctx();
+      if (a.state !== "running") a.resume();
+      const src = a.createBufferSource();
+      src.buffer = a.createBuffer(1, 1, 22050);
+      src.connect(a.destination);
+      src.start(0);
+    } catch (e) {}
+  }
+  document.addEventListener("pointerdown", unlock, true);
+  document.addEventListener("keydown", unlock, true);
+  // A tap is a short burst of band-passed noise that fades in over 1.5 ms instead of starting at full level.
+  // Hover taps play only once audio is running; click taps wait for the context to wake up.
+  function tap(dur, freq, q, gain, delay = 0, wake = false) {
+    if (!soundOn || (!wake && (!audio || audio.state !== "running"))) return;
+    try {
+      const a = ctx(), play = () => {
+        const sr = a.sampleRate, len = Math.floor(sr * dur), atk = Math.max(1, Math.floor(sr * 0.0015));
+        const buf = a.createBuffer(1, len, sr), ch = buf.getChannelData(0);
+        for (let i = 0; i < len; i++) ch[i] = (Math.random() * 2 - 1) * Math.min(1, i / atk) * Math.pow(1 - i / len, 3);
+        const src = a.createBufferSource(), bp = a.createBiquadFilter(), g = a.createGain();
+        src.buffer = buf;
+        bp.type = "bandpass";
+        bp.frequency.value = freq;
+        bp.Q.value = q;
+        g.gain.value = gain;
+        src.connect(bp).connect(g).connect(out);
+        src.start(a.currentTime + delay);
+      };
+      if (a.state === "running") play();
+      else a.resume().then(play, () => {});
     } catch (e) {}
   }
   const hoverSound = () => tap(0.008, 1400, 2, 0.16);
   // A quiet mouse: the press, then a softer release 60 ms later.
-  const clickSound = () => { tap(0.012, 1700, 2, 0.55); tap(0.01, 1500, 2, 0.25, 0.06); };
+  const clickSound = () => { tap(0.012, 1700, 2, 0.55, 0, true); tap(0.01, 1500, 2, 0.25, 0.06, true); };
   document.addEventListener("pointerover", ev => {
     if (ev.pointerType !== "mouse") return;
     const target = ev.target.closest(SOUND_TARGET);

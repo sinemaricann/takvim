@@ -299,11 +299,20 @@ button,input{font:inherit;color:inherit}
 .bn-chev{margin-left:auto;font-size:16px;line-height:1}
 
 /* weekly timetable */
-.prog{overflow:hidden}
+.prog{position:relative}
+.prog-head h2{border-radius:calc(var(--r) - 2px) 0 0 0}
+.slots-wrap{position:relative;margin-left:auto}
+.slots-wrap~.small-btn{margin-left:0}
+.slots-pop{left:auto;right:0;z-index:30}
+.seg{display:flex;gap:6px}
+.sl-regular{display:flex;flex-wrap:wrap;gap:10px}
+.sl-regular input,.sl-regular select,.sl-custom input{background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:6px 8px;font-weight:600;font-size:14px;color:var(--text)}
+.sl-custom{width:100%}
+.sl-custom input{width:100%}
 .prog-head{display:flex;flex-wrap:wrap;align-items:stretch;border-bottom:var(--bw) solid var(--line)}
 .prog-head h2{margin:0;display:flex;align-items:center;padding:12px 22px;background:var(--lilac);color:var(--on-tint);border-right:var(--bw) solid var(--line);font:600 17px var(--f-display)}
 .prog-tools{flex:1 1 220px;display:flex;align-items:center;gap:10px;padding:8px 12px 8px 16px;min-width:0}
-.prog-tools .small-btn{margin-left:auto}
+.prog-tools>.small-btn{margin-left:0}
 .prog .cform{margin:0 14px 14px}
 .tt-wrap{padding:10px 12px}
 .tt{display:grid;grid-template-columns:52px repeat(5,minmax(0,1fr));gap:4px}
@@ -558,6 +567,25 @@ button,input{font:inherit;color:inherit}
         <h2 id="prog-title">Program</h2>
         <div class="prog-tools">
           <span class="rel" id="cf-sum"></span>
+          <div class="slots-wrap">
+            <button class="small-btn" id="slots-btn" type="button" aria-expanded="false" aria-controls="slots-pop">Saatler ▾</button>
+            <form class="pop slots-pop" id="slots-pop" autocomplete="off" novalidate hidden>
+              <div class="seg" role="radiogroup" aria-label="Saat düzeni">
+                <label class="kchip" style="--k:var(--lilac)"><input class="sr" type="radio" name="slmode" value="regular" checked><span>Düzenli</span></label>
+                <label class="kchip" style="--k:var(--lilac)"><input class="sr" type="radio" name="slmode" value="custom"><span>Özel liste</span></label>
+              </div>
+              <div class="sl-regular" id="sl-regular">
+                <label class="fld"><span class="fl">Başla</span><input id="sl-start" type="time" value="08:40"></label>
+                <label class="fld"><span class="fl">Bitir</span><input id="sl-end" type="time" value="16:40"></label>
+                <label class="fld"><span class="fl">Aralık</span><select id="sl-step"><option value="30">30 dk</option><option value="45">45 dk</option><option value="50">50 dk</option><option value="60" selected>60 dk</option><option value="90">90 dk</option></select></label>
+              </div>
+              <label class="fld sl-custom" id="sl-custom" hidden><span class="fl">Saatler (virgülle)</span><input id="sl-list" placeholder="08.40, 09.40, 10.40, 13.40"></label>
+              <div class="cform-actions">
+                <button class="small-btn sun" type="submit">Kaydet</button>
+                <button class="link-btn" id="sl-reset" type="button">ODTÜ düzeni</button>
+              </div>
+            </form>
+          </div>
           <button class="small-btn" id="cf-new" type="button">+ Ekle</button>
         </div>
       </div>
@@ -758,7 +786,7 @@ button,input{font:inherit;color:inherit}
   const writable = () => !!S.db && !!S.base && !S.readOnly;
   // Everything is kept in this browser's localStorage; nothing leaves the device.
   const STORE_KEY = "guz-takvim.v1";
-  let store = {events: {}, courses: {}, kinds: [], hidden: [], todos: [], kindEdits: {}, links: null};
+  let store = {events: {}, courses: {}, kinds: [], hidden: [], todos: [], kindEdits: {}, links: null, slots: null};
   function loadStore() {
     const raw = localStorage.getItem(STORE_KEY);
     const d = raw ? JSON.parse(raw) : {};
@@ -767,11 +795,23 @@ button,input{font:inherit;color:inherit}
       hidden: Array.isArray(d.hidden) ? d.hidden.filter(k => BASE_KINDS[k] && k !== "diger") : [],
       kindEdits: cleanKindEdits(d.kindEdits),
       links: cleanLinks(d.links),
+      slots: cleanSlots(d.slots),
       todos: cleanTodos(d.todos)};
   }
   function cleanTodos(raw) {
     return (Array.isArray(raw) ? raw : []).filter(t => t && typeof t.id === "string" && typeof t.text === "string")
       .map(t => ({id: t.id, text: t.text.slice(0, 120), done: !!t.done, created: Number(t.created) || 0}));
+  }
+  // Program rows: either a regular range (start, end, step in minutes) or a custom list of start times.
+  const DEFAULT_SLOTS = {start: 8 * 60 + 40, end: 16 * 60 + 40, step: 60};
+  function cleanSlots(raw) {
+    if (!raw || typeof raw !== "object") return null;
+    if (Array.isArray(raw.custom)) {
+      const t = [...new Set(raw.custom.map(Number).filter(m => m >= 0 && m < 1440))].sort((a, b) => a - b);
+      return t.length ? {custom: t} : null;
+    }
+    const start = Number(raw.start), end = Number(raw.end), step = Number(raw.step);
+    return start >= 0 && end > start && end < 1440 && step >= 15 && step <= 180 ? {start, end, step} : null;
   }
   function cleanLinks(raw) {
     if (!Array.isArray(raw)) return null;
@@ -1611,12 +1651,82 @@ button,input{font:inherit;color:inherit}
     };
   }
 
+  // The rows a regular range gives, stretched by whole steps so no class falls outside it.
+  function slotTimes(cs = []) {
+    const sl = store.slots || DEFAULT_SLOTS;
+    if (sl.custom) return sl.custom;
+    let first = sl.start, last = sl.end;
+    for (const c of cs) {
+      while (first > c.start) first -= sl.step;
+      while (last + sl.step < c.start + c.hours * 60) last += sl.step;
+    }
+    const out = [];
+    for (let t = first; t <= last; t += sl.step) out.push(t);
+    return out;
+  }
+  // A class sits on the row nearest its start and covers every row that begins before it ends.
+  function slotSpan(times, c) {
+    let row = 0;
+    times.forEach((t, i) => { if (Math.abs(t - c.start) < Math.abs(times[row] - c.start)) row = i; });
+    const end = c.start + c.hours * 60;
+    let last = row;
+    while (last + 1 < times.length && times[last + 1] < end - 5) last++;
+    return [row, last - row + 1];
+  }
+
+  /* program hours settings */
+  const slotsPop = $("#slots-pop"), slotsBtn = $("#slots-btn");
+  const toTime = m => `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
+  const fromTime = v => { const m = String(v || "").match(/^(\d{1,2})[.:](\d{2})$/); return m ? (+m[1]) * 60 + (+m[2]) : NaN; };
+  function syncSlotMode() {
+    const custom = slotsPop.querySelector('input[name="slmode"]:checked').value === "custom";
+    $("#sl-regular").hidden = custom;
+    $("#sl-custom").hidden = !custom;
+  }
+  function foldSlots(open) {
+    if (open) {
+      const sl = store.slots || DEFAULT_SLOTS;
+      slotsPop.querySelector(`input[name="slmode"][value="${sl.custom ? "custom" : "regular"}"]`).checked = true;
+      const reg = sl.custom ? DEFAULT_SLOTS : sl;
+      $("#sl-start").value = toTime(reg.start);
+      $("#sl-end").value = toTime(reg.end);
+      $("#sl-step").value = String(reg.step);
+      if (![...$("#sl-step").options].some(o => o.value === String(reg.step))) $("#sl-step").append(Object.assign(el("option", null, `${reg.step} dk`), {value: String(reg.step)}));
+      $("#sl-step").value = String(reg.step);
+      $("#sl-list").value = (sl.custom || []).map(hhmm).join(", ");
+      syncSlotMode();
+    }
+    slotsPop.hidden = !open;
+    slotsBtn.setAttribute("aria-expanded", String(open));
+  }
+  slotsBtn.onclick = () => foldSlots(slotsPop.hidden);
+  slotsPop.querySelectorAll('input[name="slmode"]').forEach(r => { r.onchange = syncSlotMode; });
+  document.addEventListener("click", ev => { if (!ev.composedPath().some(n => n.classList && n.classList.contains("slots-wrap"))) foldSlots(false); });
+  document.addEventListener("keydown", ev => { if (ev.key === "Escape") foldSlots(false); });
+  function saveSlots(sl) {
+    const before = store.slots;
+    store.slots = sl;
+    persist().then(() => { foldSlots(false); toast("Saatler kaydedildi"); }, err => { store.slots = before; writeFailed(err); });
+  }
+  slotsPop.addEventListener("submit", ev => {
+    ev.preventDefault();
+    if (!writable()) return;
+    if (slotsPop.querySelector('input[name="slmode"]:checked').value === "custom") {
+      const list = $("#sl-list").value.split(/[,\s;]+/).filter(Boolean).map(fromTime);
+      if (!list.length || list.some(Number.isNaN)) { toast("Saatleri 08.40, 09.40 gibi yaz."); return; }
+      saveSlots(cleanSlots({custom: list}));
+    } else {
+      const sl = cleanSlots({start: fromTime($("#sl-start").value), end: fromTime($("#sl-end").value), step: Number($("#sl-step").value)});
+      if (!sl) { toast("Bitiş, başlangıçtan sonra olmalı."); return; }
+      saveSlots(sl);
+    }
+  });
+  $("#sl-reset").onclick = () => saveSlots(null);
+
   function renderProgram() {
     const grid = $("#program-grid"), cs = S.courses.filter(c => !c.until || c.until >= TODAY);
     grid.replaceChildren();
-    let first = 8 * 60 + 40, last = 16 * 60 + 40;
-    for (const c of cs) { first = Math.min(first, c.start); last = Math.max(last, c.start + (c.hours - 1) * 60); }
-    const rows = Math.floor((last - first) / 60) + 1;
+    const times = slotTimes(cs), rows = times.length;
     grid.style.gridTemplateRows = `auto repeat(${rows}, var(--slot-h))`;
     const todayIdx = dow(now);
     SHORT.slice(0, 5).forEach((d, i) => {
@@ -1625,7 +1735,7 @@ button,input{font:inherit;color:inherit}
       grid.append(h);
     });
     for (let r = 0; r < rows; r++) {
-      const lab = el("span", "tt-time", hhmm(first + r * 60));
+      const lab = el("span", "tt-time", hhmm(times[r]));
       lab.style.gridRow = String(r + 2);
       grid.append(lab);
       for (let i = 0; i < 5; i++) {
@@ -1642,7 +1752,8 @@ button,input{font:inherit;color:inherit}
       const metu = c.start % 60 === 40;
       b.dataset.h = metu ? String(c.hours) : "free";
       b.style.gridColumn = String(c.day + 2);
-      b.style.gridRow = `${Math.round((c.start - first) / 60) + 2} / span ${c.hours}`;
+      const [row, span] = slotSpan(times, c);
+      b.style.gridRow = `${row + 2} / span ${span}`;
       b.style.setProperty("--k", COLORS[c.color]);
       const code = el("span", "tt-code", c.code);
       if (c.section) code.append(el("span", "tt-sec", "/" + c.section));
@@ -1658,6 +1769,7 @@ button,input{font:inherit;color:inherit}
     $("#cf-sum").textContent = !S.loaded ? "yükleniyor…"
       : cs.length ? `${new Set(cs.map(c => c.code)).size} ders · haftada ${hours} saat` : "henüz ders yok";
     $("#cf-new").hidden = !writable();
+    $("#slots-btn").hidden = !writable();
     cform.hidden = !S.courseForm || !writable();
   }
 
@@ -1676,7 +1788,8 @@ button,input{font:inherit;color:inherit}
   function openCourse(c) {
     if (!writable()) return;
     S.courseForm = c ? c.id : "new";
-    const start = c ? hhmm(c.start) : "08.40";
+    const times = slotTimes(S.courses), start = c ? hhmm(c.start) : hhmm(times[0]);
+    $("#c-start").replaceChildren(...times.map(t => Object.assign(el("option", null, hhmm(t)), {value: hhmm(t)})));
     if (![...$("#c-start").options].some(o => o.value === start)) {
       const o = el("option", null, start);
       o.value = start;
@@ -1844,6 +1957,8 @@ button,input{font:inherit;color:inherit}
     for (const t of ts) if (!haveT.has(t.id)) store.todos.push(t);
     const ls = cleanLinks(d && d.links);
     if (ls) { const mine = store.links || DEFAULT_LINKS, urls = new Set(mine.map(l => l.url)); store.links = [...mine, ...ls.filter(l => !urls.has(l.url))]; }
+    const sl = cleanSlots(d && d.slots);
+    if (sl && !store.slots) store.slots = sl;
     const kes = cleanKindEdits(d && d.kindEdits);
     for (const k in kes) if (!store.kindEdits[k]) store.kindEdits[k] = kes[k];
     persist().then(

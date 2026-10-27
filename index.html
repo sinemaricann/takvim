@@ -244,11 +244,8 @@ button,input{font:inherit;color:inherit}
 .menu-head.sun{background:var(--sun)}
 .menu-head.lilac{background:var(--lilac)}
 .menu-head.pink{background:var(--pink)}
-/* Backup tools sit at the very bottom, as one row. */
-.backup{max-width:640px;width:100%;margin:0 auto}
-.backup .filters{display:flex;flex-wrap:wrap}
-.backup .frow{flex:1 1 180px;justify-content:center;border-bottom:0;border-right:1.5px solid var(--line)}
-.backup .frow:last-child{border-right:0}
+/* The to-do list and, under it, the backup tools share the column beside the program. */
+.lower-side{display:grid;gap:18px;align-content:start;min-width:0}
 /* The GÖSTER box lets its "more kinds" panel spill over what is below it. */
 .menu.show{overflow:visible;position:relative;z-index:3}
 .menu.show .menu-head{border-radius:calc(var(--r) - 2px) calc(var(--r) - 2px) 0 0}
@@ -579,27 +576,28 @@ button,input{font:inherit;color:inherit}
         </div>
       </form>
     </section>
-    <div class="menu sticker todo-box">
-      <div class="menu-head pink">YAPILACAKLAR</div>
-      <form id="tform" class="tform" autocomplete="off" novalidate>
-        <label class="sr" for="t-text">Yapılacak</label>
-        <input id="t-text" placeholder="Ne yapılacak?" maxlength="120">
-        <button class="small-btn sun" type="submit">Ekle</button>
-      </form>
-      <ul class="todos" id="todos"></ul>
-      <button class="link-btn tclear" id="t-clear" type="button" hidden>Tamamlananları temizle</button>
+    <div class="lower-side">
+      <div class="menu sticker todo-box">
+        <div class="menu-head pink">YAPILACAKLAR</div>
+        <form id="tform" class="tform" autocomplete="off" novalidate>
+          <label class="sr" for="t-text">Yapılacak</label>
+          <input id="t-text" placeholder="Ne yapılacak?" maxlength="120">
+          <button class="small-btn sun" type="submit">Ekle</button>
+        </form>
+        <ul class="todos" id="todos"></ul>
+        <button class="link-btn tclear" id="t-clear" type="button" hidden>Tamamlananları temizle</button>
+      </div>
+      <div class="menu sticker backup">
+        <div class="menu-head lilac">YEDEK</div>
+        <div class="filters">
+          <button class="frow" id="b-export" type="button">Yedek indir</button>
+          <button class="frow" id="b-import" type="button">Dosya yükle (yedek ya da Rez Excel)</button>
+          <button class="frow" id="b-ics" type="button">Telefon takvimine aktar (.ics)</button>
+        </div>
+        <input type="file" id="b-file" accept=".json,application/json,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>
+      </div>
     </div>
   </div>
-  </div>
-
-  <div class="menu sticker backup">
-    <div class="menu-head lilac">YEDEK</div>
-    <div class="filters">
-      <button class="frow" id="b-export" type="button">Yedek indir</button>
-      <button class="frow" id="b-import" type="button">Dosya yükle (yedek ya da METU Rez Excel)</button>
-      <button class="frow" id="b-ics" type="button">Telefon takvimine aktar (.ics)</button>
-    </div>
-    <input type="file" id="b-file" accept=".json,application/json,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>
   </div>
 </div>
 <div class="toast" id="toast" role="status" hidden></div>

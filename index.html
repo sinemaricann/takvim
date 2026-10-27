@@ -124,7 +124,10 @@ button,input{font:inherit;color:inherit}
 
 /* board */
 /* Order under the deadline banner: the calendar at full width, then the add bar, then the side panels in a row. */
-.board{display:grid;grid-template-columns:minmax(0,1fr);gap:22px;align-items:start}
+/* Under the full-width calendar: add form, GÖSTER and SIRADAKİ side by side (the rail's boxes join the board's grid). */
+.board{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr) minmax(0,1fr);gap:18px 22px;align-items:start}
+.board>.cal,.board .status{grid-column:1/-1}
+.board>.addbar{max-width:none;margin:0}
 .cal{position:relative;min-width:0;margin-top:30px}
 /* A grey cat naps on the calendar's top edge, paws and tail hanging over the title row.
    The SVG's line y=42 is the card edge, so it is shifted up by 42/160 of its width. */
@@ -233,10 +236,9 @@ button,input{font:inherit;color:inherit}
 .ev-del[data-armed="1"]{background:var(--alert);color:var(--alert-on);padding:0 14px;font-weight:800;font-size:13px}
 
 /* rail */
-.rail{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
+.rail{display:contents}
 /* The weekly program and the to-do list share one row under the side panels. */
 .lower{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:18px;align-items:start}
-.rail .status{grid-column:1/-1}
 .menu{overflow:hidden}
 .menu-head{background:var(--teal);color:var(--on-tint);font:600 18px var(--f-display);letter-spacing:.06em;text-align:center;padding:10px;border-bottom:var(--bw) solid var(--line)}
 .menu-head.sun{background:var(--sun)}
@@ -373,9 +375,8 @@ button,input{font:inherit;color:inherit}
   #month-view,#month-view.split{grid-template-columns:minmax(0,1fr)}
   #month-view:not(.split) .day{display:none}
   #month-view.split .day{border-left:0;border-top:var(--bw) solid var(--line)}
-  .board{grid-template-columns:minmax(0,1fr)}
-  .rail{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
-  .status{grid-column:1/-1}
+  .board{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .board>.addbar{grid-column:1/-1}
 }
 @media (max-width:600px){
   .sound-btn{top:10px;width:36px;height:36px}
@@ -388,7 +389,7 @@ button,input{font:inherit;color:inherit}
   .cell.wk .pill{font-size:0;padding:0}
   .sound-btn svg{width:19px;height:19px}
   .brand{padding:0 46px}
-  .rail{grid-template-columns:minmax(0,1fr)}
+  .board{grid-template-columns:minmax(0,1fr)}
   .filters{display:flex;flex-wrap:wrap;gap:6px;padding:10px}
   .frow,.frow:last-child{border:1.5px solid var(--line);border-radius:999px;padding:5px 12px;font-size:14px}
   .tabs{flex:1 1 100%;padding-bottom:0}
@@ -490,7 +491,7 @@ button,input{font:inherit;color:inherit}
       <div class="add-top">
         <span id="edit-tag" class="edit-tag" hidden>Düzenle</span>
         <label class="sr" for="f-title">Etkinlik adı</label>
-        <input id="f-title" placeholder="Ne var? Örn. CENG 315 - Midterm" maxlength="120">
+        <input id="f-title" placeholder="Ne var? Örn. Midterm" maxlength="120">
         <button id="f-submit" class="btn-add" type="submit">Ekle</button>
       </div>
       <div class="add-more">

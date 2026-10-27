@@ -32,6 +32,14 @@
 *,*::before,*::after{box-sizing:border-box}
 html{position:relative}
 .sound-btn{position:absolute;top:18px;right:max(16px,env(safe-area-inset-right,0px));z-index:5;width:42px;height:42px;display:grid;place-items:center;padding:0;border:var(--bw) solid var(--line);border-radius:50%;background:var(--surface);box-shadow:2px 3px 0 var(--line);cursor:pointer}
+/* Links: a pill in the top-left corner that opens a short list of the METU sites. */
+.links{position:absolute;top:18px;left:max(16px,env(safe-area-inset-left,0px));z-index:6}
+.links-btn{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 16px 0 12px;border:var(--bw) solid var(--line);border-radius:999px;background:var(--surface);box-shadow:2px 3px 0 var(--line);font:600 15px var(--f-display);cursor:pointer}
+.links-btn svg{width:20px;height:20px;fill:none;stroke:var(--line);stroke-width:2.2;stroke-linecap:round}
+.links-pop{position:absolute;top:calc(100% + 8px);left:0;display:grid;min-width:180px;overflow:hidden;background:var(--surface);border:var(--bw) solid var(--line);border-radius:12px;box-shadow:3px 4px 0 var(--line)}
+.links-pop a{padding:10px 14px;font-weight:800;color:var(--text);text-decoration:none;border-bottom:1.5px solid var(--line)}
+.links-pop a:last-child{border-bottom:0}
+.links-pop a:hover,.links-pop a:focus-visible{background:var(--pink);color:var(--on-tint)}
 .sound-btn svg{width:22px;height:22px;fill:var(--sun);stroke:var(--line);stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
 .sound-btn .w{fill:none}
 .sound-btn[aria-pressed="false"]{background:var(--card)}
@@ -314,6 +322,9 @@ button,input{font:inherit;color:inherit}
 /* custom kinds */
 .frow.add{justify-content:center;font-weight:800;font-size:14px;color:var(--muted)}
 .kedit{cursor:default}
+.kdel-btn.edit{margin-left:8px;background:var(--sun);color:var(--on-tint)}
+.kdel-btn.edit+.kdel-btn{margin-left:6px}
+.kask input:not([type]){border:1.5px solid var(--line);border-radius:10px;padding:6px 10px;font-weight:700;font-size:14px;background:var(--surface);color:var(--text)}
 .kdel-btn{margin-left:8px;border:1.5px solid var(--line);border-radius:999px;background:var(--alert);color:var(--alert-on);padding:1px 10px;font-weight:800;font-size:12px;cursor:pointer}
 .kgroup{display:grid;flex:1 1 100%}
 .kask{display:grid;gap:8px;padding:10px 14px;background:var(--card);border-bottom:1.5px solid var(--line);font-weight:700;font-size:14px}
@@ -329,13 +340,13 @@ button,input{font:inherit;color:inherit}
 /* Hovered boxes and buttons lift toward the viewer: they move up-left and their hard shadow grows.
    Buttons that sit flush inside a card rise above their neighbours with z-index. */
 @media (hover:hover){
-  .ev,.cell,.tt-block,.tdel,.sound-btn,.rail .menu,.banner,.small-btn,.icon-btn,.btn-add,.tab,.frow,.nx,.bn-row,.kchip span,.kcolors span,.kdel-btn,.ev-del,.toast button,.link-btn,.ev-ask .small-btn{transition:transform .14s,box-shadow .14s,background-color .14s}
+  .ev,.cell,.tt-block,.tdel,.sound-btn,.links-btn,.rail .menu,.banner,.small-btn,.icon-btn,.btn-add,.tab,.frow,.nx,.bn-row,.kchip span,.kcolors span,.kdel-btn,.ev-del,.toast button,.link-btn,.ev-ask .small-btn{transition:transform .14s,box-shadow .14s,background-color .14s}
   .ev:hover{transform:translate(-2px,-3px);box-shadow:5px 7px 0 var(--line)}
   .cell:hover{background:var(--surface);transform:translate(-2px,-3px);box-shadow:4px 5px 0 var(--line);position:relative;z-index:1}
   .cell.today:hover{box-shadow:inset 0 0 0 3px var(--pink),4px 5px 0 var(--line)}
   .tt-block:hover{transform:translate(-2px,-3px);box-shadow:4px 6px 0 var(--line);z-index:2}
   .rail .menu:hover,.banner:hover{transform:translate(-2px,-3px);box-shadow:6px 8px 0 var(--line)}
-  .small-btn:hover,.icon-btn:hover,.kdel-btn:hover,.toast button:hover,.sound-btn:hover{transform:translate(-1px,-2px);box-shadow:3px 4px 0 var(--line)}
+  .small-btn:hover,.icon-btn:hover,.kdel-btn:hover,.toast button:hover,.sound-btn:hover,.links-btn:hover{transform:translate(-1px,-2px);box-shadow:3px 4px 0 var(--line)}
   .tdel:hover{transform:translate(-1px,-2px);box-shadow:2px 3px 0 var(--line);color:var(--text)}
   .kchip span:hover,.kcolors span:hover{transform:translate(-1px,-2px);box-shadow:2px 3px 0 var(--line)}
   .btn-add:hover,.tab:hover,.frow:hover,.nx:hover,.bn-row:hover{transform:translate(-2px,-2px);box-shadow:3px 3px 0 var(--line);position:relative;z-index:1}
@@ -355,12 +366,15 @@ button,input{font:inherit;color:inherit}
 }
 @media (max-width:600px){
   .sound-btn{top:10px;width:36px;height:36px}
+  .links{top:10px}
+  .links-btn{height:36px;padding:0 9px}
+  .links-btn span{display:none}
   .cal{margin-top:22px}
   .cat{width:110px;top:-28px;right:12px}
   .cell.wk{min-height:140px}
   .cell.wk .pill{font-size:0;padding:0}
   .sound-btn svg{width:19px;height:19px}
-  .brand{padding:0 34px}
+  .brand{padding:0 46px}
   .rail{grid-template-columns:minmax(0,1fr)}
   .filters{display:flex;flex-wrap:wrap;gap:6px;padding:10px}
   .frow,.frow:last-child{border:1.5px solid var(--line);border-radius:999px;padding:5px 12px;font-size:14px}
@@ -392,6 +406,14 @@ button,input{font:inherit;color:inherit}
 </style>
 </head>
 <body>
+<div class="links" id="links">
+  <button class="links-btn" id="links-btn" type="button" aria-expanded="false" aria-controls="links-pop"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span>Linkler</span></button>
+  <div class="links-pop" id="links-pop" hidden>
+    <a href="https://odtuclass2026f.metu.edu.tr/" target="_blank" rel="noopener">ODTÜClass</a>
+    <a href="https://rez.metu.edu.tr/" target="_blank" rel="noopener">METU Rez</a>
+    <a href="https://student.metu.edu.tr/" target="_blank" rel="noopener">METU SAİS</a>
+  </div>
+</div>
 <button class="sound-btn" id="sound-btn" type="button" aria-pressed="true" aria-label="Sesleri kapat">
   <svg class="snd-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="w" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
   <svg class="snd-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="w" d="M17 9.5l5 5M22 9.5l-5 5"/></svg>
@@ -561,10 +583,10 @@ button,input{font:inherit;color:inherit}
     <div class="menu-head lilac">YEDEK</div>
     <div class="filters">
       <button class="frow" id="b-export" type="button">Yedek indir</button>
-      <button class="frow" id="b-import" type="button">Yedekten yükle</button>
+      <button class="frow" id="b-import" type="button">Dosya yükle (yedek ya da METU Rez Excel)</button>
       <button class="frow" id="b-ics" type="button">Telefon takvimine aktar (.ics)</button>
     </div>
-    <input type="file" id="b-file" accept=".json,application/json" hidden>
+    <input type="file" id="b-file" accept=".json,application/json,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>
   </div>
 </div>
 <div class="toast" id="toast" role="status" hidden></div>
@@ -584,13 +606,17 @@ button,input{font:inherit;color:inherit}
     diger:  {label:"Diğer",  c:"var(--mist)"}
   };
   // Each person can add their own kinds; they live in their profile doc and sit before "Diğer".
-  const KIND_COLORS = ["var(--c1)", "var(--c2)", "var(--c3)", "var(--c4)", "var(--c7)", "var(--c8)", "var(--lilac)", "var(--teal)"];
+  // The first eight colours are the original custom-kind palette (stored indexes keep pointing at them).
+  const KIND_COLORS = ["var(--c1)", "var(--c2)", "var(--c3)", "var(--c4)", "var(--c7)", "var(--c8)", "var(--lilac)", "var(--teal)",
+    "var(--pink)", "var(--sun)", "var(--flag)", "var(--c5)", "var(--c6)", "var(--mist)"];
   let KINDS = {...BASE_KINDS};
-  function buildKinds(custom, hidden = []) {
+  // Built-in kinds can be renamed and recoloured too; those changes live in store.kindEdits.
+  function buildKinds(custom, hidden = [], edits = {}) {
     const {diger, ...rest} = BASE_KINDS, out = {};
-    for (const [k, v] of Object.entries(rest)) if (!hidden.includes(k)) out[k] = v;
+    const withEdit = (k, v) => edits[k] ? {...v, label: edits[k].label || v.label, c: KIND_COLORS[edits[k].color] || v.c} : v;
+    for (const [k, v] of Object.entries(rest)) if (!hidden.includes(k)) out[k] = withEdit(k, v);
     for (const k of custom) out[k.id] = {label: k.label, c: KIND_COLORS[k.color] || KIND_COLORS[0], custom: true};
-    out.diger = diger;
+    out.diger = withEdit("diger", diger);
     KINDS = out;
   }
   const XSVG = '<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 11l10 10M21 11L11 21" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>';
@@ -612,7 +638,7 @@ button,input{font:inherit;color:inherit}
 
   const S = {
     events: [], occ: [], loaded: false, db: null, readOnly: false, base: null,
-    kinds: [], kindForm: false, kindEdit: false, kindAsk: null,
+    kinds: [], kindForm: false, kindEdit: false, kindAsk: null, kindRename: null,
     view: ["list", "week", "month", "f15"].includes(saved("tk.view2")) ? saved("tk.view2") : "f15",
     f15Start: null,
     picks: (() => { try { const v = JSON.parse(saved("tk.picks2")); return Array.isArray(v) ? new Set(v) : null; } catch (e) { return null; } })(),
@@ -721,18 +747,25 @@ button,input{font:inherit;color:inherit}
   const writable = () => !!S.db && !!S.base && !S.readOnly;
   // Everything is kept in this browser's localStorage; nothing leaves the device.
   const STORE_KEY = "guz-takvim.v1";
-  let store = {events: {}, courses: {}, kinds: [], hidden: [], todos: []};
+  let store = {events: {}, courses: {}, kinds: [], hidden: [], todos: [], kindEdits: {}};
   function loadStore() {
     const raw = localStorage.getItem(STORE_KEY);
     const d = raw ? JSON.parse(raw) : {};
     const obj = x => x && typeof x === "object" && !Array.isArray(x) ? x : {};
     return {events: obj(d.events), courses: obj(d.courses), kinds: Array.isArray(d.kinds) ? d.kinds : [],
       hidden: Array.isArray(d.hidden) ? d.hidden.filter(k => BASE_KINDS[k] && k !== "diger") : [],
+      kindEdits: cleanKindEdits(d.kindEdits),
       todos: cleanTodos(d.todos)};
   }
   function cleanTodos(raw) {
     return (Array.isArray(raw) ? raw : []).filter(t => t && typeof t.id === "string" && typeof t.text === "string")
       .map(t => ({id: t.id, text: t.text.slice(0, 120), done: !!t.done, created: Number(t.created) || 0}));
+  }
+  function cleanKindEdits(raw) {
+    const out = {};
+    if (raw && typeof raw === "object") for (const [k, v] of Object.entries(raw))
+      if (BASE_KINDS[k] && v && typeof v === "object") out[k] = {label: String(v.label || "").slice(0, 20), color: Number.isInteger(v.color) ? v.color : -1};
+    return out;
   }
   function cleanKinds(raw) {
     return raw.filter(k => k && typeof k.id === "string" && typeof k.label === "string" && !BASE_KINDS[k.id])
@@ -740,7 +773,7 @@ button,input{font:inherit;color:inherit}
   }
   function refresh() {
     S.kinds = cleanKinds(store.kinds);
-    buildKinds(S.kinds, store.hidden);
+    buildKinds(S.kinds, store.hidden, store.kindEdits);
     if (!S.picks) S.picks = new Set(Object.keys(KINDS));
     S.events = Object.entries(store.events).map(([id, d]) => norm(id, d)).filter(Boolean);
     S.courses = Object.entries(store.courses).map(([id, d]) => normCourse(id, d)).filter(Boolean);
@@ -1166,8 +1199,38 @@ button,input{font:inherit;color:inherit}
     const del = el("button", "kdel-btn", "Sil");
     del.type = "button";
     del.setAttribute("aria-label", `Türü sil: ${label}`);
-    del.onclick = () => { S.kindAsk = S.kindAsk === k ? null : k; render(); };
-    row.append(sw, el("span", null, label), el("span", "cnt", String(n)), del);
+    del.onclick = () => { S.kindAsk = S.kindAsk === k ? null : k; S.kindRename = null; render(); };
+    const ren = el("button", "kdel-btn edit", "Düzenle");
+    ren.type = "button";
+    ren.setAttribute("aria-label", `Türü düzenle: ${label}`);
+    ren.onclick = () => { S.kindRename = S.kindRename === k ? null : k; S.kindAsk = null; render(); };
+    row.append(sw, el("span", null, label), el("span", "cnt", String(n)), ren, del);
+    if (S.kindRename === k) {
+      const group = el("div", "kgroup"), box = el("form", "kask");
+      const inp = el("input");
+      inp.value = label;
+      inp.maxLength = 20;
+      inp.setAttribute("aria-label", "Tür adı");
+      const cols = el("div", "kcolors");
+      KIND_COLORS.forEach((col, i) => {
+        const lab = el("label"), r = el("input", "sr"), sp = el("span");
+        r.type = "radio"; r.name = "kren"; r.value = String(i);
+        r.setAttribute("aria-label", `Renk ${i + 1}`);
+        r.checked = col === c;
+        sp.style.setProperty("--k", col);
+        lab.append(r, sp);
+        cols.append(lab);
+      });
+      const acts = el("div", "kask-acts"), ok = el("button", "small-btn sun", "Kaydet"), no = el("button", "small-btn", "Vazgeç");
+      no.type = "button";
+      no.onclick = () => { S.kindRename = null; render(); };
+      acts.append(ok, no);
+      box.append(inp, cols, acts);
+      box.onsubmit = ev => { ev.preventDefault(); renameKind(k, inp.value, box.querySelector('input[name="kren"]:checked')); };
+      group.append(row, box);
+      setTimeout(() => inp.focus(), 0);
+      return group;
+    }
     if (S.kindAsk !== k) return row;
     const group = el("div", "kgroup"), ask = el("div", "kask"), acts = el("div", "kask-acts");
     ask.append(el("p", null, n ? `${label} türünü siliyorsun. ${n} etkinliği ne olsun?` : `${label} türü silinsin mi?`));
@@ -1180,6 +1243,19 @@ button,input{font:inherit;color:inherit}
     ask.append(acts);
     group.append(row, ask);
     return group;
+  }
+
+  function renameKind(k, name, picked) {
+    if (!writable()) return;
+    const label = name.trim().replace(/\s+/g, " ").slice(0, 20);
+    if (!label) { toast("Türe bir ad ver."); return; }
+    if (Object.entries(KINDS).some(([id, v]) => id !== k && lower(v.label) === lower(label))) { toast("Bu adda bir tür zaten var."); return; }
+    const color = picked ? Number(picked.value) : -1;
+    const before = JSON.stringify(store);
+    if (BASE_KINDS[k]) store.kindEdits = {...store.kindEdits, [k]: {label, color}};
+    else store.kinds = store.kinds.map(x => x.id === k ? {...x, label, color: color >= 0 ? color : x.color} : x);
+    S.kindRename = null;
+    persist().then(() => toast(`${label} kaydedildi`, {label: "Geri al", run: () => { store = JSON.parse(before); persist().then(() => toast("Geri alındı"), writeFailed); }}), writeFailed);
   }
 
   function deleteKind(k, label, mode) {
@@ -1737,6 +1813,7 @@ button,input{font:inherit;color:inherit}
     const f = ev.target.files[0];
     ev.target.value = "";
     if (!f || !writable()) return;
+    if (/\.xlsx$/i.test(f.name)) { importXlsx(f); return; }
     let d;
     try { d = JSON.parse(await f.text()); } catch (e) { toast("Bu dosya okunamadı."); return; }
     const obj = x => x && typeof x === "object" && !Array.isArray(x) ? x : null;
@@ -1753,11 +1830,92 @@ button,input{font:inherit;color:inherit}
     for (const k of ks) if (!have.has(k.id)) store.kinds.push(k);
     const haveT = new Set(store.todos.map(t => t.id));
     for (const t of ts) if (!haveT.has(t.id)) store.todos.push(t);
+    const kes = cleanKindEdits(d && d.kindEdits);
+    for (const k in kes) if (!store.kindEdits[k]) store.kindEdits[k] = kes[k];
     persist().then(
       () => toast(`${okEv.length} etkinlik, ${okCs.length} ders yüklendi`),
       err => { store = JSON.parse(before); writeFailed(err); }
     );
   };
+
+  /* Excel import. An .xlsx file is a zip of XML parts; this reads the first sheet with the browser's own
+     decompressor, so no library is loaded and the file never leaves the device. */
+  async function unzipEntries(buf) {
+    const dv = new DataView(buf), bytes = new Uint8Array(buf), out = {};
+    let eocd = -1;
+    for (let i = buf.byteLength - 22; i >= 0; i--) if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+    if (eocd < 0) throw new Error("zip");
+    let p = dv.getUint32(eocd + 16, true);
+    const n = dv.getUint16(eocd + 10, true), dec = new TextDecoder();
+    for (let e = 0; e < n; e++) {
+      const method = dv.getUint16(p + 10, true), size = dv.getUint32(p + 20, true);
+      const nameLen = dv.getUint16(p + 28, true), extraLen = dv.getUint16(p + 30, true), commentLen = dv.getUint16(p + 32, true);
+      const local = dv.getUint32(p + 42, true), name = dec.decode(bytes.subarray(p + 46, p + 46 + nameLen));
+      const start = local + 30 + dv.getUint16(local + 26, true) + dv.getUint16(local + 28, true);
+      out[name] = {method, data: bytes.subarray(start, start + size)};
+      p += 46 + nameLen + extraLen + commentLen;
+    }
+    return out;
+  }
+  async function entryText(entry) {
+    if (!entry) return "";
+    if (entry.method === 0) return new TextDecoder().decode(entry.data);
+    const stream = new Blob([entry.data]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+    return new Response(stream).text();
+  }
+  async function readXlsxRows(file) {
+    const files = await unzipEntries(await file.arrayBuffer()), parse = t => new DOMParser().parseFromString(t, "application/xml");
+    const shared = [...parse(await entryText(files["xl/sharedStrings.xml"])).getElementsByTagName("si")].map(si => [...si.getElementsByTagName("t")].map(t => t.textContent).join(""));
+    const sheetName = Object.keys(files).filter(n => /^xl\/worksheets\/sheet\d+\.xml$/.test(n)).sort()[0];
+    const sheet = parse(await entryText(files[sheetName])), rows = [];
+    for (const r of sheet.getElementsByTagName("row")) {
+      const row = [];
+      for (const c of r.getElementsByTagName("c")) {
+        const col = (c.getAttribute("r") || "").replace(/\d+/g, "").split("").reduce((n, ch) => n * 26 + ch.charCodeAt(0) - 64, 0) - 1;
+        const t = c.getAttribute("t"), v = c.getElementsByTagName("v")[0];
+        row[col] = t === "s" ? shared[Number(v && v.textContent)] : t === "inlineStr" ? [...c.getElementsByTagName("t")].map(x => x.textContent).join("") : v ? v.textContent : "";
+      }
+      rows.push(row.map(x => x == null ? "" : String(x)));
+    }
+    return rows;
+  }
+
+  // METU Rez export: one row per session, "Seans 10.12.2023 / 14.00 - 15.30"; "Aktif: Hayır" rows were cancelled and are skipped.
+  // Sessions land under a "Spor" kind (made on first import); re-importing the same file adds nothing twice.
+  function sporKind() {
+    const found = Object.entries(KINDS).find(([, v]) => lower(v.label) === "spor");
+    if (found) return found[0];
+    store.kinds = [...store.kinds, {id: "kspor", label: "Spor", color: 7}];
+    S.picks.add("kspor");
+    savePicks();
+    return "kspor";
+  }
+  async function importXlsx(file) {
+    let rows;
+    try { rows = await readXlsxRows(file); } catch (e) { toast("Bu Excel dosyası okunamadı."); return; }
+    const head = (rows[0] || []).map(lower), col = name => head.findIndex(h => h.includes(name));
+    const iT = col("tesis"), iS = col("seans"), iA = col("aktif");
+    if (iT < 0 || iS < 0) { toast("Bu Excel METU Rez dışa aktarımına benzemiyor."); return; }
+    const before = JSON.stringify(store), kind = sporKind();
+    let added = 0, same = 0, skipped = 0;
+    for (const r of rows.slice(1)) {
+      const m = /(\d{1,2})\.(\d{1,2})\.(\d{4})\s*\/\s*(\d{1,2}[.:]\d{2})\s*-\s*(\d{1,2}[.:]\d{2})/.exec(r[iS] || "");
+      if (!m) continue;
+      if (iA >= 0 && lower(r[iA]).startsWith("hay")) { skipped++; continue; }
+      const date = `${m[3]}-${pad(m[2])}-${pad(m[1])}`, from = m[4].replace(":", "."), to = m[5].replace(":", ".");
+      const place = (r[iT] || "").trim(), title = place.split(" - ").pop() || "Spor";
+      const id = `rez-${date}-${from.replace(".", "")}-${lower(title).replace(/[^a-z0-9ğüşöçı]+/g, "-").slice(0, 30)}`;
+      if (store.events[id]) { same++; continue; }
+      store.events[id] = {date, time: from, title, place, kind, tentative: false, note: `${from}–${to}`};
+      added++;
+    }
+    persist().then(() => {
+      const parts = [`${added} rezervasyon eklendi`];
+      if (same) parts.push(`${same} zaten vardı`);
+      if (skipped) parts.push(`${skipped} iptal atlandı`);
+      toast(parts.join(" · "), added ? {label: "Geri al", run: () => { store = JSON.parse(before); persist().then(() => toast("Geri alındı"), writeFailed); }} : undefined);
+    }, err => { store = JSON.parse(before); writeFailed(err); });
+  }
 
   function icsText() {
     const esc = t => String(t).replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/([,;])/g, "\\$1");
@@ -1900,6 +2058,13 @@ button,input{font:inherit;color:inherit}
   }
   const catEl = $(".cat");
   catEl.addEventListener("pointerover", ev => { if (!catEl.contains(ev.relatedTarget)) purr(); });
+
+  const linksPop = $("#links-pop"), linksBtn = $("#links-btn");
+  const foldLinks = open => { linksPop.hidden = !open; linksBtn.setAttribute("aria-expanded", String(open)); };
+  linksBtn.onclick = () => foldLinks(linksPop.hidden);
+  document.addEventListener("click", ev => { if (!ev.target.closest("#links")) foldLinks(false); });
+  document.addEventListener("keydown", ev => { if (ev.key === "Escape") foldLinks(false); });
+  linksPop.addEventListener("click", ev => { if (ev.target.closest("a")) foldLinks(false); });
 
   const soundBtn = $("#sound-btn");
   function syncSound() {

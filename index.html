@@ -1112,16 +1112,11 @@ button,input{font:inherit;color:inherit}
         f.append(wrap);
       }
     }
-    if (writable() && !S.kindForm && !S.kindEdit) {
-      const a = el("button", "frow add", "+ Tür ekle");
-      a.type = "button";
-      a.onclick = () => { S.kindForm = true; render(); $("#k-name").focus(); };
-      f.append(a);
-    }
-    if (writable() && !S.kindForm) {
-      const t = el("button", "frow add", S.kindEdit ? "Bitti" : "Türleri düzenle");
+    // One button opens kind editing: rename, recolour or delete each kind, and add new ones in the form below.
+    if (writable()) {
+      const t = el("button", "frow add", S.kindEdit ? "Bitti" : "Türleri ekle / düzenle");
       t.type = "button";
-      t.onclick = () => { S.kindEdit = !S.kindEdit; S.kindAsk = null; S.moreOpen = false; render(); };
+      t.onclick = () => { S.kindEdit = !S.kindEdit; S.kindForm = S.kindEdit; S.kindAsk = null; S.kindRename = null; S.moreOpen = false; render(); };
       f.append(t);
     }
     renderKindForm();
@@ -1196,12 +1191,12 @@ button,input{font:inherit;color:inherit}
       S.picks.add(id);
       savePicks();
       $("#k-name").value = "";
-      S.kindForm = false;
+      S.kindForm = S.kindEdit;
       render();
       toast(`Tür eklendi: ${label}`);
     } catch (err) { writeFailed(err); }
   });
-  $("#k-cancel").onclick = () => { S.kindForm = false; render(); };
+  $("#k-cancel").onclick = () => { S.kindForm = false; S.kindEdit = false; render(); };
 
   // In edit mode each kind gets a delete button; deleting asks whether its events move to "Diğer" or go with it.
   function kindEditRow(k, label, c, n) {
@@ -2175,3 +2170,4 @@ button,input{font:inherit;color:inherit}
 </script>
 </body>
 </html>
+

@@ -34,11 +34,17 @@ html{position:relative}
 .sound-btn{position:absolute;top:18px;right:max(16px,env(safe-area-inset-right,0px));z-index:5;width:42px;height:42px;display:grid;place-items:center;padding:0;border:var(--bw) solid var(--line);border-radius:50%;background:var(--surface);box-shadow:2px 3px 0 var(--line);cursor:pointer}
 /* Links: a pill in the top-left corner that opens a short list of the METU sites. */
 .links{position:absolute;top:18px;left:max(16px,env(safe-area-inset-left,0px));z-index:6}
-.links-btn{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 16px 0 12px;border:var(--bw) solid var(--line);border-radius:999px;background:var(--surface);box-shadow:2px 3px 0 var(--line);font:600 15px var(--f-display);cursor:pointer}
+.links-btn{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 16px 0 12px;border:var(--bw) solid var(--line);border-radius:999px;background:var(--sun);color:var(--on-tint);box-shadow:2px 3px 0 var(--line);font:600 15px var(--f-display);cursor:pointer}
 .links-btn svg{width:20px;height:20px;fill:none;stroke:var(--line);stroke-width:2.2;stroke-linecap:round}
 .links-pop{position:absolute;top:calc(100% + 8px);left:0;display:grid;min-width:180px;overflow:hidden;background:var(--surface);border:var(--bw) solid var(--line);border-radius:12px;box-shadow:3px 4px 0 var(--line)}
 .links-pop a{padding:10px 14px;font-weight:800;color:var(--text);text-decoration:none;border-bottom:1.5px solid var(--line)}
 .links-pop a:last-child{border-bottom:0}
+.links-pop .ltool{border:0;border-top:1.5px dashed var(--line);background:var(--card);padding:8px 14px;font-weight:800;font-size:13px;color:var(--muted);text-align:center;cursor:pointer}
+.links-pop .lrow{display:flex;align-items:center;gap:6px;padding:8px 10px;border-bottom:1.5px solid var(--line)}
+.links-pop input{min-width:0;flex:1;border:1.5px solid var(--line);border-radius:8px;padding:5px 8px;font-weight:700;font-size:14px;background:var(--surface);color:var(--text)}
+.links-pop .lnew{display:grid;gap:6px;padding:10px;background:var(--card)}
+.links-pop .lnew .small-btn{justify-self:start}
+.links-pop.editing{min-width:280px}
 .links-pop a:hover,.links-pop a:focus-visible{background:var(--pink);color:var(--on-tint)}
 .sound-btn svg{width:22px;height:22px;fill:var(--sun);stroke:var(--line);stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
 .sound-btn .w{fill:none}
@@ -349,7 +355,11 @@ button,input{font:inherit;color:inherit}
   .small-btn:hover,.icon-btn:hover,.kdel-btn:hover,.toast button:hover,.sound-btn:hover,.links-btn:hover{transform:translate(-1px,-2px);box-shadow:3px 4px 0 var(--line)}
   .tdel:hover{transform:translate(-1px,-2px);box-shadow:2px 3px 0 var(--line);color:var(--text)}
   .kchip span:hover,.kcolors span:hover{transform:translate(-1px,-2px);box-shadow:2px 3px 0 var(--line)}
-  .btn-add:hover,.tab:hover,.frow:hover,.nx:hover,.bn-row:hover{transform:translate(-2px,-2px);box-shadow:3px 3px 0 var(--line);position:relative;z-index:1}
+  .tab:hover{transform:translate(-2px,-2px);box-shadow:3px 3px 0 var(--line);position:relative;z-index:1}
+  /* Rows that fill a card edge to edge can't move without poking through the card's border,
+     so they light up and get a soft key-like shade along their bottom edge instead. */
+  .frow:not([aria-pressed="true"]):hover,.nx:hover,.bn-row:hover{background:var(--card)}
+  .btn-add:hover,.frow:hover,.nx:hover,.bn-row:hover{box-shadow:inset 0 -3px 0 rgba(42,41,51,.18)}
   .ev-del:hover{transform:translate(-1px,-2px);box-shadow:2px 3px 0 var(--line)}
   .link-btn:hover{transform:translate(-1px,-2px)}
   .small-btn:active,.icon-btn:active,.btn-add:active,.kdel-btn:active,.toast button:active,.tab:active,.cell:active{transform:translate(1px,2px);box-shadow:none}
@@ -408,11 +418,7 @@ button,input{font:inherit;color:inherit}
 <body>
 <div class="links" id="links">
   <button class="links-btn" id="links-btn" type="button" aria-expanded="false" aria-controls="links-pop"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span>Linkler</span></button>
-  <div class="links-pop" id="links-pop" hidden>
-    <a href="https://odtuclass2026f.metu.edu.tr/" target="_blank" rel="noopener">ODTÜClass</a>
-    <a href="https://rez.metu.edu.tr/" target="_blank" rel="noopener">METU Rez</a>
-    <a href="https://student.metu.edu.tr/" target="_blank" rel="noopener">METU SAİS</a>
-  </div>
+  <div class="links-pop" id="links-pop" hidden></div>
 </div>
 <button class="sound-btn" id="sound-btn" type="button" aria-pressed="true" aria-label="Sesleri kapat">
   <svg class="snd-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="w" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
@@ -747,7 +753,7 @@ button,input{font:inherit;color:inherit}
   const writable = () => !!S.db && !!S.base && !S.readOnly;
   // Everything is kept in this browser's localStorage; nothing leaves the device.
   const STORE_KEY = "guz-takvim.v1";
-  let store = {events: {}, courses: {}, kinds: [], hidden: [], todos: [], kindEdits: {}};
+  let store = {events: {}, courses: {}, kinds: [], hidden: [], todos: [], kindEdits: {}, links: null};
   function loadStore() {
     const raw = localStorage.getItem(STORE_KEY);
     const d = raw ? JSON.parse(raw) : {};
@@ -755,11 +761,17 @@ button,input{font:inherit;color:inherit}
     return {events: obj(d.events), courses: obj(d.courses), kinds: Array.isArray(d.kinds) ? d.kinds : [],
       hidden: Array.isArray(d.hidden) ? d.hidden.filter(k => BASE_KINDS[k] && k !== "diger") : [],
       kindEdits: cleanKindEdits(d.kindEdits),
+      links: cleanLinks(d.links),
       todos: cleanTodos(d.todos)};
   }
   function cleanTodos(raw) {
     return (Array.isArray(raw) ? raw : []).filter(t => t && typeof t.id === "string" && typeof t.text === "string")
       .map(t => ({id: t.id, text: t.text.slice(0, 120), done: !!t.done, created: Number(t.created) || 0}));
+  }
+  function cleanLinks(raw) {
+    if (!Array.isArray(raw)) return null;
+    return raw.filter(l => l && typeof l.url === "string" && /^https?:\/\//i.test(l.url))
+      .map(l => ({id: String(l.id || l.url), title: String(l.title || "").slice(0, 40), url: l.url.slice(0, 500)}));
   }
   function cleanKindEdits(raw) {
     const out = {};
@@ -1368,6 +1380,7 @@ button,input{font:inherit;color:inherit}
     renderFilters();
     renderNext();
     renderTodos();
+    renderLinks();
     renderBanner();
     v === "list" ? renderList(clash) : v === "week" ? renderWeek(clash) : v === "f15" ? renderF15(clash) : renderMonth(clash);
     if (open) renderDay(groupByDay(visible()), clash);
@@ -1404,7 +1417,7 @@ button,input{font:inherit;color:inherit}
   ["r-n", "r-unit", "r-until"].forEach(id => $("#" + id).addEventListener("input", syncRepeat));
   $("#rep-btn").onclick = () => foldRepeat($("#rep-pop").hidden);
   document.addEventListener("click", ev => {
-    if (S.moreOpen && !ev.target.closest(".fmore-wrap")) { S.moreOpen = false; renderFilters(); }
+    if (S.moreOpen && !ev.composedPath().some(n => n.classList && n.classList.contains("fmore-wrap"))) { S.moreOpen = false; renderFilters(); }
   });
   $("#rep-done").onclick = () => foldRepeat(false);
   // A click anywhere outside an open panel, or Esc, folds it again.
@@ -1744,7 +1757,6 @@ button,input{font:inherit;color:inherit}
   $("#past-btn").onclick = () => { S.showPast = !S.showPast; render(); };
 
   $("#f-date").value = TODAY;
-  render();
 
   /* to-do list: kept with the calendar data, so backups carry it too */
   function renderTodos() {
@@ -1830,6 +1842,8 @@ button,input{font:inherit;color:inherit}
     for (const k of ks) if (!have.has(k.id)) store.kinds.push(k);
     const haveT = new Set(store.todos.map(t => t.id));
     for (const t of ts) if (!haveT.has(t.id)) store.todos.push(t);
+    const ls = cleanLinks(d && d.links);
+    if (ls) { const mine = store.links || DEFAULT_LINKS, urls = new Set(mine.map(l => l.url)); store.links = [...mine, ...ls.filter(l => !urls.has(l.url))]; }
     const kes = cleanKindEdits(d && d.kindEdits);
     for (const k in kes) if (!store.kindEdits[k]) store.kindEdits[k] = kes[k];
     persist().then(
@@ -1957,6 +1971,12 @@ button,input{font:inherit;color:inherit}
 
   /* sound: a tiny tap when the pointer reaches a new box or button, a quiet mouse click when one is clicked.
      Synthesized with Web Audio, so there are no sound files; browsers stay silent until the first click. */
+  const DEFAULT_LINKS = [
+    {id: "odtuclass", title: "ODTÜClass", url: "https://odtuclass2026f.metu.edu.tr/"},
+    {id: "rez", title: "METU Rez", url: "https://rez.metu.edu.tr/"},
+    {id: "sais", title: "METU SAİS", url: "https://student.metu.edu.tr/"},
+    {id: "mail", title: "METU Mail", url: "https://metumail.metu.edu.tr/"}
+  ];
   const SOUND_TARGET = "button, label.kchip, .kcolors label, .tt-block";
   let soundOn = saved("tk.sound") !== "off", audio = null, lastHover = null, lastTick = 0;
   // Everything plays through one soft chain: a low-pass to take the edge off, a compressor so no tap peaks.
@@ -2059,12 +2079,69 @@ button,input{font:inherit;color:inherit}
   const catEl = $(".cat");
   catEl.addEventListener("pointerover", ev => { if (!catEl.contains(ev.relatedTarget)) purr(); });
 
+  // Links are the user's own list, kept with the calendar data; until it is edited the four METU sites are shown.
   const linksPop = $("#links-pop"), linksBtn = $("#links-btn");
-  const foldLinks = open => { linksPop.hidden = !open; linksBtn.setAttribute("aria-expanded", String(open)); };
+  let linksEdit = false;
+  const foldLinks = open => {
+    linksPop.hidden = !open;
+    linksBtn.setAttribute("aria-expanded", String(open));
+    if (!open && linksEdit) { linksEdit = false; renderLinks(); }
+  };
   linksBtn.onclick = () => foldLinks(linksPop.hidden);
-  document.addEventListener("click", ev => { if (!ev.target.closest("#links")) foldLinks(false); });
+  // composedPath still knows where a click started even if a re-render removed that element meanwhile.
+  const inside = (ev, sel) => ev.composedPath().some(n => n.matches && n.matches(sel));
+  document.addEventListener("click", ev => { if (!inside(ev, "#links")) foldLinks(false); });
   document.addEventListener("keydown", ev => { if (ev.key === "Escape") foldLinks(false); });
   linksPop.addEventListener("click", ev => { if (ev.target.closest("a")) foldLinks(false); });
+  const linkList = () => store.links || DEFAULT_LINKS;
+  function setLinks(list) {
+    const before = store.links;
+    store.links = list;
+    persist().catch(err => { store.links = before; writeFailed(err); });
+  }
+  function renderLinks() {
+    linksPop.replaceChildren();
+    linksPop.classList.toggle("editing", linksEdit);
+    const list = linkList(), tool = (text, fn) => { const b = el("button", "ltool", text); b.type = "button"; b.onclick = fn; linksPop.append(b); };
+    if (!linksEdit) {
+      for (const l of list) {
+        const a = el("a", null, l.title || new URL(l.url).hostname);
+        a.href = l.url; a.target = "_blank"; a.rel = "noopener";
+        linksPop.append(a);
+      }
+      if (!list.length) linksPop.append(el("p", "empty", "Henüz link yok."));
+      if (writable()) tool("Linkleri düzenle", () => { linksEdit = true; renderLinks(); });
+      return;
+    }
+    for (const l of list) {
+      const row = el("div", "lrow"), inp = el("input"), del = el("button", "tdel", "×");
+      inp.value = l.title;
+      inp.maxLength = 40;
+      inp.setAttribute("aria-label", `Başlık: ${l.title}`);
+      inp.title = l.url;
+      inp.onchange = () => setLinks(linkList().map(x => x.id === l.id ? {...x, title: inp.value.trim() || x.title} : x));
+      inp.onkeydown = ev => { if (ev.key === "Enter") inp.blur(); };
+      del.type = "button";
+      del.setAttribute("aria-label", `Sil: ${l.title}`);
+      del.onclick = () => setLinks(linkList().filter(x => x.id !== l.id));
+      row.append(inp, del);
+      linksPop.append(row);
+    }
+    const add = el("form", "lnew"), t = el("input"), u = el("input"), ok = el("button", "small-btn sun", "Ekle");
+    t.placeholder = "Başlık"; t.maxLength = 40; t.setAttribute("aria-label", "Yeni link başlığı");
+    u.placeholder = "Adres (örn. odtuclass.metu.edu.tr)"; u.setAttribute("aria-label", "Yeni link adresi");
+    add.append(t, u, ok);
+    add.onsubmit = ev => {
+      ev.preventDefault();
+      let url = u.value.trim();
+      if (!url) { u.focus(); return; }
+      if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+      try { new URL(url); } catch (e) { toast("Bu adres geçerli görünmüyor."); return; }
+      setLinks([...linkList(), {id: newId(), title: t.value.trim() || new URL(url).hostname, url}]);
+    };
+    linksPop.append(add);
+    tool("Bitti", () => { linksEdit = false; renderLinks(); });
+  }
 
   const soundBtn = $("#sound-btn");
   function syncSound() {

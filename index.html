@@ -48,6 +48,28 @@ html{position:relative}
 .links-pop a:hover,.links-pop a:focus-visible{background:var(--pink);color:var(--on-tint)}
 .sound-btn svg{width:22px;height:22px;fill:var(--sun);stroke:var(--line);stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
 .sound-btn .w{fill:none}
+/* Profile: the user's avatar sits next to the sound switch and opens a small avatar maker. */
+.tb-right{grid-column:3;justify-self:end;display:flex;align-items:center;gap:10px;position:relative;z-index:5}
+.prof-btn{width:42px;height:42px;padding:0;border:0;border-radius:50%;background:none;box-shadow:2px 3px 0 var(--line);cursor:pointer;transition:transform .14s,box-shadow .14s}
+.prof-btn svg{display:block;width:100%;height:100%}
+.prof-btn:hover{transform:translate(-1px,-2px);box-shadow:3px 4px 0 var(--line)}
+.prof-card{width:min(780px,100%)}
+.prof{display:grid;grid-template-columns:210px minmax(0,1fr);gap:16px;padding:16px;align-items:start}
+.prof-prev{position:sticky;top:0;display:grid;justify-items:center;gap:12px}
+.prof-prev>svg{width:180px;height:180px}
+.prof-prev input{width:100%;border:var(--bw) solid var(--line);border-radius:10px;padding:7px 10px;font:700 15px var(--f-body);text-align:center;background:var(--surface);color:var(--text)}
+.prof-opts{display:grid;gap:14px}
+.av-sec h3{margin:0 0 7px;font:800 12.5px var(--f-body);letter-spacing:.08em;color:var(--muted)}
+.av-row{display:flex;flex-wrap:wrap;gap:8px}
+.av-opt{display:grid;justify-items:center;gap:2px;padding:4px 4px 3px;border:var(--bw) solid var(--line);border-radius:12px;background:var(--surface);color:var(--text);font:700 11.5px var(--f-body);cursor:pointer}
+.av-opt svg{width:50px;height:50px}
+.av-opt[aria-pressed="true"]{background:var(--lilac);box-shadow:2px 3px 0 var(--line)}
+.av-sw{width:28px;height:28px;padding:0;border:var(--bw) solid var(--line);border-radius:50%;cursor:pointer}
+.av-sw[aria-pressed="true"]{box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--line)}
+.av-seg{display:inline-flex;border:var(--bw) solid var(--line);border-radius:999px;overflow:hidden}
+.av-seg button{border:0;background:var(--surface);color:var(--text);font:600 14px var(--f-display);padding:5px 16px;cursor:pointer}
+.av-seg button+button{border-left:var(--bw) solid var(--line)}
+.av-seg button[aria-pressed="true"]{background:var(--pink)}
 .sound-btn[aria-pressed="false"]{background:var(--card)}
 .sound-btn[aria-pressed="false"] svg{fill:var(--mist)}
 .sound-btn[aria-pressed="true"] .snd-off,.sound-btn[aria-pressed="false"] .snd-on{display:none}
@@ -458,6 +480,11 @@ input::placeholder{opacity:1}
 }
 @media (max-width:600px){
   .sound-btn{width:36px;height:36px}
+  .prof-btn{width:36px;height:36px}
+  .tb-right{gap:8px}
+  .prof{grid-template-columns:minmax(0,1fr)}
+  .prof-prev{position:static}
+  .prof-prev>svg{width:120px;height:120px}
   .cal-title{padding-right:118px}
   .cal-title h2{font-size:20px}
   .tab{white-space:nowrap;padding:5px 8px}
@@ -504,10 +531,13 @@ input::placeholder{opacity:1}
       <div class="links-pop" id="links-pop" hidden></div>
     </div>
     <div id="banner" class="banner sticker" aria-label="Yaklaşan son günler" hidden></div>
+    <div class="tb-right">
+    <button class="prof-btn" id="prof-btn" type="button" aria-label="Profil"></button>
     <button class="sound-btn" id="sound-btn" type="button" aria-pressed="true" aria-label="Sesleri kapat">
       <svg class="snd-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="w" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
       <svg class="snd-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="w" d="M17 9.5l5 5M22 9.5l-5 5"/></svg>
     </button>
+    </div>
   </div>
 
 
@@ -705,6 +735,12 @@ input::placeholder{opacity:1}
     <div class="izl-detail" id="izl-detail"></div>
   </div>
 </div>
+<div class="modal" id="prof-modal" hidden>
+  <div class="modal-card prof-card sticker" role="dialog" aria-modal="true" aria-labelledby="prof-title">
+    <div class="menu-head lilac modal-head"><span id="prof-title">PROFİL</span><button class="icon-btn" id="prof-close" type="button" aria-label="Kapat"><span class="x-mark">×</span></button></div>
+    <div class="prof" id="prof-body"></div>
+  </div>
+</div>
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script>
@@ -863,7 +899,7 @@ input::placeholder{opacity:1}
   const writable = () => !!S.db && !!S.base && !S.readOnly;
   // Everything is kept in this browser's localStorage; nothing leaves the device.
   const STORE_KEY = "guz-takvim.v1";
-  let store = {events: {}, courses: {}, kinds: [], hidden: [], todos: [], kindEdits: {}, links: null, slots: null};
+  let store = {events: {}, courses: {}, kinds: [], hidden: [], todos: [], kindEdits: {}, links: null, slots: null, profile: null};
   function loadStore() {
     const raw = localStorage.getItem(STORE_KEY);
     const d = raw ? JSON.parse(raw) : {};
@@ -873,6 +909,7 @@ input::placeholder{opacity:1}
       kindEdits: cleanKindEdits(d.kindEdits),
       links: cleanLinks(d.links),
       slots: cleanSlots(d.slots),
+      profile: cleanProfile(d.profile),
       todos: cleanTodos(d.todos)};
   }
   function cleanTodos(raw) {
@@ -913,6 +950,7 @@ input::placeholder{opacity:1}
     S.courses = Object.entries(store.courses).map(([id, d]) => normCourse(id, d)).filter(Boolean);
     S.loaded = true;
     render();
+    renderProfBtn();
   }
   function persist() {
     try { localStorage.setItem(STORE_KEY, JSON.stringify({v: 1, ...store})); }
@@ -2193,6 +2231,8 @@ input::placeholder{opacity:1}
     if (sl && !store.slots) store.slots = sl;
     const kes = cleanKindEdits(d && d.kindEdits);
     for (const k in kes) if (!store.kindEdits[k]) store.kindEdits[k] = kes[k];
+    const pr = cleanProfile(d && d.profile);
+    if (pr && !store.profile) store.profile = pr;
     persist().then(
       () => toast(`${okEv.length} etkinlik, ${okCs.length} ders yüklendi`),
       err => { store = JSON.parse(before); writeFailed(err); }
@@ -2510,6 +2550,173 @@ input::placeholder{opacity:1}
     tool("Bitti", () => { linksEdit = false; renderLinks(); });
   }
 
+  /* Profile avatar: drawn from parts (hair, top, glasses, earrings, clip, hat) and kept with the calendar data,
+     so it travels in the backup file. Before anything is chosen the button shows a plain person outline. */
+  const AV_INK = "#2A2933";
+  const AV_L = `stroke="${AV_INK}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
+  const avP = (d, f) => `<path d="${d}" fill="${f}" ${AV_L}/>`;
+  const avC = (x, y, r, f) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${f}" ${AV_L}/>`;
+  const avDots = (pts, r, f) => pts.map(([x, y]) => avC(x, y, r, f)).join("");
+  const avStar = (x, y, r, f) => {
+    let d = "";
+    for (let i = 0; i < 10; i++) { const a = Math.PI / 5 * i - Math.PI / 2, k = i % 2 ? r * .45 : r; d += (i ? "L" : "M") + (x + k * Math.cos(a)).toFixed(2) + " " + (y + k * Math.sin(a)).toFixed(2); }
+    return `<path d="${d}Z" fill="${f}" stroke="${AV_INK}" stroke-width="1.4" stroke-linejoin="round"/>`;
+  };
+  const AV_SKINS = ["#FBE3D3", "#F6D7C3", "#E8B796", "#C68E6A", "#8D5A3B", "#5E3B26"];
+  const AV_HAIRC = ["#2E2A33", "#5A3A28", "#8A5A3B", "#B5652E", "#E2B85A", "#F1DCA0", "#B9B4B0", "#F2F0EE", "#F4A6C0", "#B9ADE8", "#8EC5E8", "#8ED3B0"];
+  const AV_CLOTH = ["#F8CDE1", "#F5B5B5", "#FBCB96", "#FDE59A", "#C9EBD6", "#8ED3C9", "#A6DCE2", "#9ED8EE", "#D6CCF5", "#B9ADE8", "#FFFFFF", "#3A3A48"];
+  const AV_BGS = ["#D6CCF5", "#F8CDE1", "#FDE59A", "#C9EBD6", "#A6DCE2", "#FBCB96", "#F3F1F6", "#B9ADE8"];
+  // back sits behind the head, front on top of it; top (a bun) hides under a hat; over (a scarf) covers the shoulders.
+  const AV_HAIR = {
+    f: [
+      {name: "Uzun düz", back: c => avP("M28 48 Q26 22 50 22 Q74 22 72 48 L76 92 Q50 98 24 92Z", c), front: c => avP("M30 50 Q28 26 50 25 Q72 26 70 50 Q66 37 56 35 Q46 41 30 50Z", c)},
+      {name: "Kahküllü kısa", back: c => avP("M27 50 Q24 22 50 22 Q76 22 73 50 L75 70 Q68 73 62 68 L38 68 Q32 73 25 70Z", c), front: c => avP("M31 46 Q31 25 50 25 Q69 25 69 46 Q50 40 31 46Z", c)},
+      {name: "Topuz", top: c => avC(50, 20, 10, c), front: c => avP("M29.5 50 Q29 28 50 28 Q71 28 70.5 50 Q66 37 50 37 Q34 37 29.5 50Z", c)},
+      {name: "At kuyruğu", back: c => avP("M66 34 Q92 40 85 78 Q79 62 68 52Z", c), front: c => avP("M29.5 50 Q29 28 50 28 Q71 28 70.5 50 Q66 37 50 37 Q34 37 29.5 50Z", c)},
+      {name: "Kıvırcık", back: c => avDots([[27, 47], [28, 35], [36, 26], [50, 22], [64, 26], [72, 35], [73, 47], [25, 59], [75, 59], [26, 71], [74, 71]], 9, c), front: c => avDots([[37, 33], [49, 30], [61, 33]], 7, c)},
+      {name: "Başörtüsü", scarf: true, over: c => avP("M21 58 Q21 22 50 22 Q79 22 79 58 Q80 77 69 85 Q50 93 31 85 Q20 77 21 58Z", c),
+        front: () => `<path d="M30.5 52 Q32 32 50 31.5 Q68 32 69.5 52" fill="none" stroke="${AV_INK}" stroke-width="1.6" opacity=".45"/>`}
+    ],
+    m: [
+      {name: "Yana taralı", front: c => avP("M30 47 Q28 24 50 23 Q72 24 70 47 Q68 37 60 35 Q50 39 40 35 Q33 38 30 47Z", c)},
+      {name: "Kıvırcık", front: c => avDots([[30, 44], [34, 34], [43, 28], [53, 27], [62, 30], [69, 37], [71, 46]], 7.5, c)},
+      {name: "Çok kısa", front: c => avP("M31 45 Q31 27 50 27 Q69 27 69 45 Q64 36 50 36 Q36 36 31 45Z", c)},
+      {name: "Kabarık", front: c => avP("M30 47 Q27 26 46 22 Q61 16 70 28 Q73 36 70 47 Q66 35 56 34 Q44 37 30 47Z", c)},
+      {name: "Omuz boyu", back: c => avP("M29 48 Q27 22 50 22 Q73 22 71 48 L72 74 Q66 76 62 72 L38 72 Q34 76 28 74Z", c),
+        front: c => avP("M30 50 Q29 25 50 24 Q71 25 70 50 Q64 34 52 33 L50 37 L48 33 Q36 34 30 50Z", c)}
+    ]
+  };
+  const AV_SHOULDERS = "M8 104 L9 93 Q11 82 27 79.5 L42 77 Q50 85 58 77 L73 79.5 Q89 82 91 93 L92 104Z";
+  const AV_SLEEVES = `<path d="M19 85 Q23 94 21 104 M81 85 Q77 94 79 104" fill="none" stroke="${AV_INK}" stroke-width="2" stroke-linecap="round"/>`;
+  const AV_TOPS = [
+    {name: "Tişört", draw: c => avP(AV_SHOULDERS, c) + AV_SLEEVES},
+    {name: "V yaka", draw: c => avP("M8 104 L9 93 Q11 82 27 79.5 L42 77 L50 90 L58 77 L73 79.5 Q89 82 91 93 L92 104Z", c) + AV_SLEEVES},
+    {name: "Atlet", draw: (c, skin) => avP(AV_SHOULDERS, skin) + avP("M23 104 Q26 93 31 88 L34 78.5 L40.5 77.5 Q42.5 89 50 89 Q57.5 89 59.5 77.5 L66 78.5 L69 88 Q74 93 77 104Z", c)},
+    {name: "Kapüşonlu", draw: c => avP(AV_SHOULDERS, c) + AV_SLEEVES + avP("M34 79 Q50 69 66 79 Q62 91 50 91 Q38 91 34 79Z", c)
+      + `<path d="M45 89 L44 98 M55 89 L56 98" stroke="${AV_INK}" stroke-width="2" stroke-linecap="round"/>`}
+  ];
+  const AV_GLASSES = [
+    {name: "Yok", draw: () => ""},
+    {name: "Yuvarlak", draw: () => `<g fill="none" stroke="${AV_INK}" stroke-width="2"><circle cx="42.5" cy="51" r="6.3"/><circle cx="57.5" cy="51" r="6.3"/><path d="M48.8 51 h2.4 M36.2 50 L31 48.5 M63.8 50 L69 48.5"/></g>`},
+    {name: "Kare", draw: () => `<g fill="none" stroke="${AV_INK}" stroke-width="2" stroke-linejoin="round"><rect x="35.5" y="45.5" width="13" height="10.5" rx="2.5"/><rect x="51.5" y="45.5" width="13" height="10.5" rx="2.5"/><path d="M48.5 50 h3 M35.5 49 L31 48 M64.5 49 L69 48"/></g>`},
+    {name: "Güneş", draw: () => `<g stroke="${AV_INK}" stroke-width="2" stroke-linejoin="round"><path d="M35 46 h14 v4.5 q0 6.5 -7 6.5 q-7 0 -7 -6.5Z M51 46 h14 v4.5 q0 6.5 -7 6.5 q-7 0 -7 -6.5Z" fill="#3A3A48"/><path d="M49 48 h2 M35 47.5 L31 47 M65 47.5 L69 47" fill="none"/><path d="M38 48.5 l3 -1.5" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></g>`}
+  ];
+  const AV_EARRINGS = [
+    {name: "Yok", draw: () => ""},
+    {name: "Halka", draw: () => [30.5, 69.5].map(x => `<circle cx="${x}" cy="60.5" r="3.4" fill="none" stroke="${AV_INK}" stroke-width="3.6"/><circle cx="${x}" cy="60.5" r="3.4" fill="none" stroke="#F2C94C" stroke-width="1.6"/>`).join("")},
+    {name: "İnci", draw: () => [30.5, 69.5].map(x => `<circle cx="${x}" cy="59" r="2.5" fill="#FFFDF7" stroke="${AV_INK}" stroke-width="1.6"/>`).join("")},
+    {name: "Yıldız", draw: () => [30.5, 69.5].map(x => avStar(x, 60, 3.8, "#FDE59A")).join("")}
+  ];
+  const AV_CLIPS = [
+    {name: "Yok", draw: () => ""},
+    {name: "Fiyonk", draw: c => `<g transform="rotate(-18 63 32)">${avP("M63 32 L55 27 L55 37Z M63 32 L71 27 L71 37Z", c)}${avC(63, 32, 2.6, c)}</g>`},
+    {name: "Çiçek", draw: c => avDots([[63, 27.5], [67.3, 30.6], [65.6, 35.6], [60.4, 35.6], [58.7, 30.6]], 3.2, c) + avC(63, 32, 2.4, "#FDE59A")},
+    {name: "Yıldız", draw: c => avStar(63, 32, 6.5, c)}
+  ];
+  const AV_HATS = [
+    {name: "Yok", draw: () => ""},
+    {name: "Bere", draw: c => avC(50, 14, 5, "#FFFFFF") + avP("M28 40 Q28 18 50 18 Q72 18 72 40Z", c) + `<rect x="26" y="35" width="48" height="8.5" rx="4.25" fill="${c}" ${AV_L}/>`},
+    {name: "Kep", draw: c => avP("M29 45 Q29 22 50 22 Q71 22 71 45Z", c) + avP("M50 41 Q72 36 87 44 Q76 50 55 46Z", c) + avC(50, 22.5, 2, c)},
+    {name: "Fötr", draw: c => `<ellipse cx="50" cy="38" rx="27" ry="6" fill="${c}" ${AV_L}/>` + avP("M35 37 Q35 19 50 19 Q65 19 65 37 Q50 41 35 37Z", c) + `<path d="M35.4 32 Q50 36 64.6 32" fill="none" stroke="${AV_INK}" stroke-width="3.5"/>`}
+  ];
+  const AV_DEFAULT = {g: "f", hair: 0, hairC: 1, skin: 1, top: 0, topC: 0, glasses: 0, ear: 0, clip: 0, hat: 0, accC: 3, bg: 0};
+  // How many choices each part has, for checking a stored or imported profile.
+  const avCount = (k, a) => ({hair: AV_HAIR[a.g].length, hairC: AV_HAIR[a.g][a.hair] && AV_HAIR[a.g][a.hair].scarf ? AV_CLOTH.length : AV_HAIRC.length,
+    skin: AV_SKINS.length, top: AV_TOPS.length, topC: AV_CLOTH.length, glasses: AV_GLASSES.length, ear: AV_EARRINGS.length,
+    clip: AV_CLIPS.length, hat: AV_HATS.length, accC: AV_CLOTH.length, bg: AV_BGS.length})[k];
+  function cleanProfile(raw) {
+    if (!raw || typeof raw !== "object") return null;
+    const src = raw.av && typeof raw.av === "object" ? raw.av : {}, av = {g: src.g === "m" ? "m" : "f"};
+    for (const k of Object.keys(AV_DEFAULT)) if (k !== "g") {
+      const v = Number(src[k]);
+      av[k] = Number.isInteger(v) && v >= 0 && v < avCount(k, av) ? v : 0;
+    }
+    return {name: String(raw.name || "").slice(0, 30), av};
+  }
+  let avUid = 0;
+  function avatarSvg(a) {
+    const id = "av" + avUid++, hair = AV_HAIR[a.g][a.hair], skin = AV_SKINS[a.skin];
+    const hc = (hair.scarf ? AV_CLOTH : AV_HAIRC)[a.hairC], ac = AV_CLOTH[a.accC];
+    const scarf = !!hair.scarf, hat = !scarf && a.hat > 0;
+    const ears = scarf ? "" : [30.5, 69.5].map(x => `<ellipse cx="${x}" cy="52" rx="4" ry="5.6" fill="${skin}" ${AV_L}/>`).join("");
+    const face = [-1, 1].map(k => `<ellipse cx="${50 + k * 7.5}" cy="51" rx="2.3" ry="2.8" fill="${AV_INK}"/><circle cx="${49.1 + k * 7.5}" cy="49.8" r=".75" fill="#fff"/><circle cx="${50 + k * 12.5}" cy="58" r="3.4" fill="#F4A6C0" opacity=".7"/>`).join("")
+      + `<path d="M45.5 62 q4.5 4 9 0" fill="none" stroke="${AV_INK}" stroke-width="2" stroke-linecap="round"/>`;
+    const fig = (hair.top && !hat ? hair.top(hc) : "") + (hair.back ? hair.back(hc) : "")
+      + avP("M44 62 L44 84 L56 84 L56 62Z", skin) + AV_TOPS[a.top].draw(AV_CLOTH[a.topC], skin)
+      + (hair.over ? hair.over(hc) : "")
+      + ears + avP("M50 26 C63 26 70 36 70 50 C70 64 61 74 50 74 C39 74 30 64 30 50 C30 36 37 26 50 26Z", skin) + face
+      + hair.front(hc)
+      + (scarf ? "" : AV_EARRINGS[a.ear].draw())
+      + AV_GLASSES[a.glasses].draw()
+      + (hat ? AV_HATS[a.hat].draw(ac) : scarf ? "" : AV_CLIPS[a.clip].draw(ac));
+    return `<svg viewBox="0 0 100 100" aria-hidden="true"><defs><clipPath id="${id}"><circle cx="50" cy="50" r="46"/></clipPath></defs>
+      <circle cx="50" cy="50" r="46" fill="${AV_BGS[a.bg]}"/><g clip-path="url(#${id})"><g transform="translate(5 3) scale(.9)">${fig}</g></g>
+      <circle cx="50" cy="50" r="46" fill="none" ${AV_L}/></svg>`;
+  }
+  const AV_BLANK = `<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="var(--surface)" ${AV_L}/>
+    <circle cx="50" cy="40" r="14" fill="var(--lilac)" ${AV_L}/><path d="M24 80 Q27 60 50 60 Q73 60 76 80Z" fill="var(--lilac)" ${AV_L}/></svg>`;
+  const profBtn = $("#prof-btn"), profModal = $("#prof-modal"), profBody = $("#prof-body");
+  function renderProfBtn() {
+    const p = store.profile;
+    profBtn.innerHTML = p ? avatarSvg(p.av) : AV_BLANK;
+    profBtn.title = p && p.name ? p.name : "Profil";
+  }
+  function saveProfile(p) {
+    const before = store.profile;
+    store.profile = p;
+    persist().catch(err => { store.profile = before; writeFailed(err); });
+  }
+  function renderProf() {
+    const p = store.profile || {name: "", av: {...AV_DEFAULT}}, a = p.av, hair = AV_HAIR[a.g][a.hair], scarf = !!hair.scarf;
+    const sec = (title, body) => `<div class="av-sec"><h3>${title}</h3>${body}</div>`;
+    const opts = (k, list) => `<div class="av-row">${list.map((o, i) => `<button class="av-opt" type="button" data-k="${k}" data-v="${i}" aria-pressed="${a[k] === i}">${avatarSvg({...a, [k]: i})}${o.name}</button>`).join("")}</div>`;
+    const sw = (k, colors, label) => `<div class="av-row">${colors.map((c, i) => `<button class="av-sw" type="button" style="background:${c}" data-k="${k}" data-v="${i}" aria-pressed="${a[k] === i}" aria-label="${label} ${i + 1}"></button>`).join("")}</div>`;
+    profBody.innerHTML = `<div class="prof-prev">${avatarSvg(a)}<input id="prof-name" maxlength="30" placeholder="Adın" aria-label="Adın"><button class="small-btn sun" id="prof-rnd" type="button">Rastgele</button></div>
+      <div class="prof-opts">`
+      + sec("CİNSİYET", `<div class="av-seg"><button type="button" data-g="f" aria-pressed="${a.g === "f"}">Kadın</button><button type="button" data-g="m" aria-pressed="${a.g === "m"}">Erkek</button></div>`)
+      + sec("SAÇ", opts("hair", AV_HAIR[a.g]))
+      + sec(scarf ? "BAŞÖRTÜSÜ RENGİ" : "SAÇ RENGİ", sw("hairC", scarf ? AV_CLOTH : AV_HAIRC, "Renk"))
+      + sec("TEN", sw("skin", AV_SKINS, "Ten"))
+      + sec("ÜST", opts("top", AV_TOPS))
+      + sec("KIYAFET RENGİ", sw("topC", AV_CLOTH, "Renk"))
+      + sec("GÖZLÜK", opts("glasses", AV_GLASSES))
+      + (scarf ? "" : sec("KÜPE", opts("ear", AV_EARRINGS)) + sec("ŞAPKA", opts("hat", AV_HATS)) + (a.hat ? "" : sec("TOKA", opts("clip", AV_CLIPS)))
+        + sec("ŞAPKA / TOKA RENGİ", sw("accC", AV_CLOTH, "Renk")))
+      + sec("ARKA PLAN", sw("bg", AV_BGS, "Arka plan"))
+      + `</div>`;
+    const name = $("#prof-name");
+    name.value = p.name;
+    name.onchange = () => saveProfile({name: name.value.trim().slice(0, 30), av: {...a}});
+    name.onkeydown = ev => { if (ev.key === "Enter") name.blur(); };
+    $("#prof-rnd").onclick = () => {
+      const r = n => Math.floor(Math.random() * n);
+      const av = {...a, hair: r(AV_HAIR[a.g].length), top: r(AV_TOPS.length), topC: r(AV_CLOTH.length), glasses: Math.random() < .6 ? 0 : r(AV_GLASSES.length),
+        ear: r(AV_EARRINGS.length), hat: Math.random() < .6 ? 0 : r(AV_HATS.length), clip: r(AV_CLIPS.length), accC: r(AV_CLOTH.length), bg: r(AV_BGS.length)};
+      av.hairC = r(avCount("hairC", av));
+      setAv(av);
+    };
+  }
+  function setAv(av) {
+    if (av.hairC >= avCount("hairC", av)) av.hairC = 0;
+    saveProfile({name: store.profile ? store.profile.name : "", av});
+    renderProf();
+  }
+  profBody.addEventListener("click", ev => {
+    const b = ev.target.closest("button[data-k], button[data-g]");
+    if (!b) return;
+    const a = {...(store.profile ? store.profile.av : AV_DEFAULT)};
+    if (b.dataset.g) { if (a.g === b.dataset.g) return; a.g = b.dataset.g; a.hair = 0; }
+    else a[b.dataset.k] = +b.dataset.v;
+    setAv(a);
+  });
+  function openProf() { profModal.hidden = false; renderProf(); $("#prof-close").focus(); }
+  function closeProf() { profModal.hidden = true; profBtn.focus(); }
+  profBtn.onclick = openProf;
+  $("#prof-close").onclick = closeProf;
+  profModal.addEventListener("click", ev => { if (ev.target === ev.currentTarget) closeProf(); });
+  document.addEventListener("keydown", ev => { if (ev.key === "Escape" && !profModal.hidden) closeProf(); });
+  renderProfBtn();
+
   const soundBtn = $("#sound-btn");
   function syncSound() {
     soundBtn.setAttribute("aria-pressed", String(soundOn));
@@ -2542,4 +2749,3 @@ input::placeholder{opacity:1}
 </script>
 </body>
 </html>
-

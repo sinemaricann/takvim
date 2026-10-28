@@ -28,14 +28,17 @@
 
 *,*::before,*::after{box-sizing:border-box}
 html{position:relative}
-.sound-btn{position:absolute;top:18px;right:max(16px,env(safe-area-inset-right,0px));z-index:5;width:42px;height:42px;display:grid;place-items:center;padding:0;border:var(--bw) solid var(--line);border-radius:50%;background:var(--surface);box-shadow:2px 3px 0 var(--line);cursor:pointer}
+.sound-btn{position:relative;grid-column:3;justify-self:end;z-index:5;width:42px;height:42px;display:grid;place-items:center;padding:0;border:var(--bw) solid var(--line);border-radius:50%;background:var(--surface);box-shadow:2px 3px 0 var(--line);cursor:pointer}
 /* Links: a pill in the top-left corner that opens a short list of the METU sites. */
-.links{position:absolute;top:18px;left:max(16px,env(safe-area-inset-left,0px));z-index:6}
+/* Top bar: links on the left, the deadline banner in the middle, sound on the right. */
+.topbar{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:start;gap:14px}
+.links{position:relative;grid-column:1;z-index:6}
 .links-btn{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 16px 0 12px;border:var(--bw) solid var(--line);border-radius:999px;background:var(--sun);color:var(--on-tint);box-shadow:2px 3px 0 var(--line);font:600 15px var(--f-display);cursor:pointer}
 .links-btn svg{width:20px;height:20px;fill:none;stroke:var(--line);stroke-width:2.2;stroke-linecap:round}
 .links-pop{position:absolute;top:calc(100% + 8px);left:0;display:grid;min-width:180px;overflow:hidden;background:var(--surface);border:var(--bw) solid var(--line);border-radius:12px;box-shadow:3px 4px 0 var(--line)}
-.links-pop a{padding:10px 14px;font-weight:800;color:var(--text);text-decoration:none;border-bottom:1.5px solid var(--line)}
+.links-pop a{display:flex;align-items:center;gap:10px;padding:10px 14px;font-weight:800;color:var(--text);text-decoration:none;border-bottom:1.5px solid var(--line)}
 .links-pop a:last-child{border-bottom:0}
+.lico{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .links-pop .ltool{border:0;border-top:1.5px dashed var(--line);background:var(--card);padding:8px 14px;font-weight:800;font-size:13px;color:var(--muted);text-align:center;cursor:pointer}
 .links-pop .lrow{display:flex;align-items:center;gap:6px;padding:8px 10px;border-bottom:1.5px solid var(--line)}
 .links-pop input{min-width:0;flex:1;border:1.5px solid var(--line);border-radius:8px;padding:5px 8px;font-weight:700;font-size:14px;background:var(--surface);color:var(--text)}
@@ -288,7 +291,7 @@ input::placeholder{opacity:1}
 .kedit-pop{top:auto;bottom:calc(100% + 8px);left:auto;right:0;width:min(380px,88vw);padding:0;gap:0;justify-items:stretch;overflow:hidden}
 .kedit-pop .filters{display:grid;padding:0}
 .kedit-pop .kform{border-top:1.5px dashed var(--line)}
-/* KUŞBAKIŞI */
+/* İzlence */
 .izl-top-mini{display:flex;align-items:center;gap:14px;padding:12px 14px 8px}
 .izl-legend{flex:1;min-width:0;display:grid;gap:5px}
 .izl-legend>span{display:flex;align-items:center;gap:7px;font-weight:700;font-size:13px;min-width:0}
@@ -356,7 +359,7 @@ input::placeholder{opacity:1}
 .toast button{border:1.5px solid var(--line);border-radius:999px;background:var(--sun);color:var(--on-tint);padding:4px 12px;font-weight:800;font-size:13px;cursor:pointer}
 
 /* deadline banner */
-.banner{display:grid;max-width:880px;width:100%;margin:0 auto;overflow:hidden}
+.banner{grid-column:2;display:grid;max-width:760px;width:100%;margin:0 auto;overflow:hidden}
 .bn-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;border:0;background:var(--surface);padding:10px 16px 10px 10px;text-align:left;cursor:pointer}
 .bn-row+.bn-row{border-top:1.5px solid var(--line)}
 .bn-count{flex:none;background:var(--flag);color:var(--on-tint);border:var(--bw) solid var(--line);border-radius:10px;padding:3px 10px;font:600 16px var(--f-display);font-variant-numeric:tabular-nums}
@@ -454,8 +457,10 @@ input::placeholder{opacity:1}
   .board>.addbar{grid-column:1/-1}
 }
 @media (max-width:600px){
-  .sound-btn{top:10px;width:36px;height:36px}
-  .links{top:10px}
+  .sound-btn{width:36px;height:36px}
+  .cal-title{padding-right:118px}
+  .cal-title h2{font-size:20px}
+  .tab{white-space:nowrap;padding:5px 8px}
   .links-btn{height:36px;padding:0 9px}
   .links-btn span{display:none}
   .cal{margin-top:22px}
@@ -463,7 +468,6 @@ input::placeholder{opacity:1}
   .cell.wk{min-height:clamp(90px,18vh,140px)}
   .cell.wk .pill{font-size:0;padding:0}
   .sound-btn svg{width:19px;height:19px}
-  .brand{padding:0 46px}
   .board{grid-template-columns:minmax(0,1fr)}
   .tabs{flex:1 1 100%;padding-bottom:0}
   .tab{flex:1}
@@ -493,24 +497,18 @@ input::placeholder{opacity:1}
 </style>
 </head>
 <body>
-<div class="links" id="links">
-  <button class="links-btn" id="links-btn" type="button" aria-expanded="false" aria-controls="links-pop"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span>Linkler</span></button>
-  <div class="links-pop" id="links-pop" hidden></div>
-</div>
-<button class="sound-btn" id="sound-btn" type="button" aria-pressed="true" aria-label="Sesleri kapat">
-  <svg class="snd-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="w" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
-  <svg class="snd-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="w" d="M17 9.5l5 5M22 9.5l-5 5"/></svg>
-</button>
 <div class="wrap">
-  <header class="brand">
-    <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="bstar" viewBox="0 0 24 24"><path d="M12 3.5 l2.4 4.9 5.4.8 -3.9 3.8 .9 5.4 -4.8-2.5 -4.8 2.5 .9-5.4 -3.9-3.8 5.4-.8Z" fill="#B9ADE8" stroke="#2A2933" stroke-width="1.6" stroke-linejoin="round"/></symbol></svg>
-    <svg class="bstar s" aria-hidden="true"><use href="#bstar"/></svg><svg class="bstar" aria-hidden="true"><use href="#bstar"/></svg>
-    <h1 class="mark" aria-label="Takvim"><span>T</span><span>A</span><span>K</span><span>V</span><span>İ</span><span>M</span></h1>
-    <svg class="bstar" aria-hidden="true"><use href="#bstar"/></svg><svg class="bstar s" aria-hidden="true"><use href="#bstar"/></svg>
-    <span class="season">güz 2026</span>
-  </header>
-
-  <div id="banner" class="banner sticker" aria-label="Yaklaşan son günler" hidden></div>
+  <div class="topbar">
+    <div class="links" id="links">
+      <button class="links-btn" id="links-btn" type="button" aria-expanded="false" aria-controls="links-pop"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span>Linkler</span></button>
+      <div class="links-pop" id="links-pop" hidden></div>
+    </div>
+    <div id="banner" class="banner sticker" aria-label="Yaklaşan son günler" hidden></div>
+    <button class="sound-btn" id="sound-btn" type="button" aria-pressed="true" aria-label="Sesleri kapat">
+      <svg class="snd-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="w" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+      <svg class="snd-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="w" d="M17 9.5l5 5M22 9.5l-5 5"/></svg>
+    </button>
+  </div>
 
 
   <div class="board">
@@ -634,7 +632,7 @@ input::placeholder{opacity:1}
       <button class="link-btn tclear" id="t-clear" type="button" hidden>Tamamlananları temizle</button>
     </div>
     <div class="menu sticker izl" id="izl">
-      <div class="menu-head teal">KUŞBAKIŞI</div>
+      <div class="menu-head teal">İZLENCE</div>
       <div class="izl-mini" id="izl-mini"></div>
     </div>
     <p class="status" id="status">Yükleniyor…</p>
@@ -703,7 +701,7 @@ input::placeholder{opacity:1}
 </div>
 <div class="modal" id="izl-modal" hidden>
   <div class="modal-card sticker" role="dialog" aria-modal="true" aria-labelledby="izl-title">
-    <div class="menu-head teal modal-head"><span id="izl-title">KUŞBAKIŞI</span><button class="icon-btn" id="izl-close" type="button" aria-label="Kapat"><span class="x-mark">×</span></button></div>
+    <div class="menu-head teal modal-head"><span id="izl-title">İZLENCE</span><button class="icon-btn" id="izl-close" type="button" aria-label="Kapat"><span class="x-mark">×</span></button></div>
     <div class="izl-detail" id="izl-detail"></div>
   </div>
 </div>
@@ -2010,7 +2008,7 @@ input::placeholder{opacity:1}
   });
   $("#t-clear").onclick = () => removeTodos(t => t.done, "Tamamlananlar temizlendi");
 
-  /* KUŞBAKIŞI: how the hours of a day, week or month split between kinds (Program = the weekly classes).
+  /* İzlence: how the hours of a day, week or month split between kinds (Program = the weekly classes).
      An event with a time range in its note ("14.00–15.30", "21.00'e kadar") counts that long; any other timed
      event counts one hour; all-day events and reminders are left out. Classes count their slots (50 min each at METU). */
   const IZL = {period: ["day", "week", "month"].includes(saved("tk.izlp")) ? saved("tk.izlp") : "week", offset: 0,
@@ -2448,14 +2446,34 @@ input::placeholder{opacity:1}
     store.links = list;
     persist().catch(err => { store.links = before; writeFailed(err); });
   }
+  // A small line icon per link, picked from its id or address: class site, student office, sports booking, mail, else a chain.
+  const LINK_ICONS = {
+    cap: "M2 9.5 12 5l10 4.5L12 14 2 9.5Z M6 11.5v4.2c0 1.4 2.7 2.8 6 2.8s6-1.4 6-2.8v-4.2 M22 9.5v5",
+    campus: "M3 20.5h18 M4.5 9.5h15 M12 3.5l8 4.5H4l8-4.5Z M6.5 9.5v8 M10.2 9.5v8 M13.8 9.5v8 M17.5 9.5v8",
+    sport: "M6.5 7.5v9 M17.5 7.5v9 M3.5 10v4 M20.5 10v4 M6.5 12h11",
+    mail: "M3.5 6.5h17v11h-17Z M4 7.5l8 5.5 8-5.5",
+    link: "M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"
+  };
+  function linkIcon(l) {
+    const u = (l.id + " " + l.url).toLowerCase();
+    const key = /odtuclass|moodle/.test(u) ? "cap" : /rez/.test(u) ? "sport" : /mail/.test(u) ? "mail" : /sais|student|metu\.edu/.test(u) ? "campus" : "link";
+    const NS = "http://www.w3.org/2000/svg", svg = document.createElementNS(NS, "svg"), path = document.createElementNS(NS, "path");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("class", "lico");
+    svg.setAttribute("aria-hidden", "true");
+    path.setAttribute("d", LINK_ICONS[key]);
+    svg.append(path);
+    return svg;
+  }
   function renderLinks() {
     linksPop.replaceChildren();
     linksPop.classList.toggle("editing", linksEdit);
     const list = linkList(), tool = (text, fn) => { const b = el("button", "ltool", text); b.type = "button"; b.onclick = fn; linksPop.append(b); };
     if (!linksEdit) {
       for (const l of list) {
-        const a = el("a", null, l.title || new URL(l.url).hostname);
+        const a = el("a");
         a.href = l.url; a.target = "_blank"; a.rel = "noopener";
+        a.append(linkIcon(l), el("span", null, l.title || new URL(l.url).hostname));
         linksPop.append(a);
       }
       if (!list.length) linksPop.append(el("p", "empty", "Henüz link yok."));
@@ -2524,3 +2542,4 @@ input::placeholder{opacity:1}
 </script>
 </body>
 </html>
+

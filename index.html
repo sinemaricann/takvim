@@ -288,7 +288,7 @@ input::placeholder{opacity:1}
 .kedit-pop{top:auto;bottom:calc(100% + 8px);left:auto;right:0;width:min(380px,88vw);padding:0;gap:0;justify-items:stretch;overflow:hidden}
 .kedit-pop .filters{display:grid;padding:0}
 .kedit-pop .kform{border-top:1.5px dashed var(--line)}
-/* İzlence */
+/* KUŞBAKIŞI */
 .izl-top-mini{display:flex;align-items:center;gap:14px;padding:12px 14px 8px}
 .izl-legend{flex:1;min-width:0;display:grid;gap:5px}
 .izl-legend>span{display:flex;align-items:center;gap:7px;font-weight:700;font-size:13px;min-width:0}
@@ -634,7 +634,7 @@ input::placeholder{opacity:1}
       <button class="link-btn tclear" id="t-clear" type="button" hidden>Tamamlananları temizle</button>
     </div>
     <div class="menu sticker izl" id="izl">
-      <div class="menu-head teal">İZLENCE</div>
+      <div class="menu-head teal">KUŞBAKIŞI</div>
       <div class="izl-mini" id="izl-mini"></div>
     </div>
     <p class="status" id="status">Yükleniyor…</p>
@@ -703,7 +703,7 @@ input::placeholder{opacity:1}
 </div>
 <div class="modal" id="izl-modal" hidden>
   <div class="modal-card sticker" role="dialog" aria-modal="true" aria-labelledby="izl-title">
-    <div class="menu-head teal modal-head"><span id="izl-title">İZLENCE</span><button class="icon-btn" id="izl-close" type="button" aria-label="Kapat"><span class="x-mark">×</span></button></div>
+    <div class="menu-head teal modal-head"><span id="izl-title">KUŞBAKIŞI</span><button class="icon-btn" id="izl-close" type="button" aria-label="Kapat"><span class="x-mark">×</span></button></div>
     <div class="izl-detail" id="izl-detail"></div>
   </div>
 </div>
@@ -2010,7 +2010,7 @@ input::placeholder{opacity:1}
   });
   $("#t-clear").onclick = () => removeTodos(t => t.done, "Tamamlananlar temizlendi");
 
-  /* İzlence: how the hours of a day, week or month split between kinds (Program = the weekly classes).
+  /* KUŞBAKIŞI: how the hours of a day, week or month split between kinds (Program = the weekly classes).
      An event with a time range in its note ("14.00–15.30", "21.00'e kadar") counts that long; any other timed
      event counts one hour; all-day events and reminders are left out. Classes count their slots (50 min each at METU). */
   const IZL = {period: ["day", "week", "month"].includes(saved("tk.izlp")) ? saved("tk.izlp") : "week", offset: 0,
@@ -2524,4 +2524,3 @@ input::placeholder{opacity:1}
 </script>
 </body>
 </html>
-

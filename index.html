@@ -18,11 +18,8 @@
   --f-body:"Nunito",ui-rounded,system-ui,-apple-system,"Segoe UI",sans-serif;
   --r:14px; --bw:2px;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#172030; --dot:#25324A; --pat:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2734%27%20height%3D%2734%27%20viewBox%3D%270%200%2034%2034%27%3E%3Cg%20transform%3D%27translate%288.4%208.6%29%20scale%28.72%29%27%3E%3Cpath%20d%3D%27M12%205.5%20l1.9%203.9%204.3.6%20-3.1%203%20.7%204.3%20-3.8-2%20-3.8%202%20.7-4.3%20-3.1-3%204.3-.6Z%27%20fill%3D%27%232A3550%27%20stroke%3D%27%232A3550%27%20stroke-width%3D%271.6%27%20stroke-linejoin%3D%27round%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"); --surface:#222B3A; --card:#2A3344; --text:#F1ECE2; --muted:#A4AABA; --line:#06080D;
-  --teal:#79C4B9; --pink:#E8AFC9; --sun:#E5C157; --lilac:#B9ADE8; --mist:#AFBECB; --on-tint:#1C1C24;
-  --alert:#FF8597; --alert-on:#2A0D13; --mark:#F1ECE2;
-  --c1:#7BBFD8; --c2:#E39A9A; --c3:#AAB6C2; --c4:#8FD2C4; --c5:#E6B074; --c6:#88C677; --grid:#34415A; --c7:#B9ADE8; --c8:#DCC567; --flag:#EE8B74; color-scheme:dark}}
+/* The look is the same on every system: light unless a page explicitly sets data-theme="dark". */
+:root{color-scheme:light}
 :root[data-theme="dark"]{
   --bg:#172030; --dot:#25324A; --pat:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2734%27%20height%3D%2734%27%20viewBox%3D%270%200%2034%2034%27%3E%3Cg%20transform%3D%27translate%288.4%208.6%29%20scale%28.72%29%27%3E%3Cpath%20d%3D%27M12%205.5%20l1.9%203.9%204.3.6%20-3.1%203%20.7%204.3%20-3.8-2%20-3.8%202%20.7-4.3%20-3.1-3%204.3-.6Z%27%20fill%3D%27%232A3550%27%20stroke%3D%27%232A3550%27%20stroke-width%3D%271.6%27%20stroke-linejoin%3D%27round%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"); --surface:#222B3A; --card:#2A3344; --text:#F1ECE2; --muted:#A4AABA; --line:#06080D;
   --teal:#79C4B9; --pink:#E8AFC9; --sun:#E5C157; --lilac:#B9ADE8; --mist:#AFBECB; --on-tint:#1C1C24;
@@ -61,7 +58,24 @@ body{
   padding-right:max(16px,env(safe-area-inset-right,0px));
   padding-block:18px 56px;
 }
-button,input{font:inherit;color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+/* Form controls are drawn by the page, not the OS, so Windows, Linux and macOS look alike. */
+select{-webkit-appearance:none;appearance:none;padding-right:28px!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%232A2933' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+input[type="checkbox"]{-webkit-appearance:none;appearance:none;flex:none;width:18px;height:18px;margin:0;display:inline-grid;place-content:center;border:1.5px solid var(--line);border-radius:5px;background:var(--surface);cursor:pointer}
+input[type="checkbox"]:checked{background:var(--teal)}
+input[type="checkbox"]:checked::after{content:"";width:8px;height:4px;border:2.4px solid var(--line);border-top:0;border-right:0;transform:translateY(-1px) rotate(-45deg)}
+input[type="number"]{-moz-appearance:textfield;appearance:textfield}
+input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input[type="date"],input[type="time"]{-webkit-appearance:none;appearance:none;min-height:34px;font-family:var(--f-body)}
+input::-webkit-calendar-picker-indicator{opacity:.55;cursor:pointer}
+input::placeholder{opacity:1}
+/* Small arrows and the repeat mark are drawn in CSS, so no system font is needed for them. */
+.chev{display:inline-block;width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-2px) rotate(45deg);flex:none}
+.chev.up{transform:translateY(2px) rotate(-135deg)}
+.chev.left{transform:translateX(2px) rotate(135deg)}
+.chev.right{transform:translateX(-2px) rotate(-45deg)}
+.ico{width:15px;height:15px;flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 :focus-visible{outline:3px solid var(--line);outline-offset:2px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:-1px}
 .wrap{max-width:1080px;margin:0 auto;display:grid;gap:22px}
@@ -118,7 +132,7 @@ button,input{font:inherit;color:inherit}
 .kchip input:focus-visible + span{outline:3px solid var(--line);outline-offset:2px}
 .kchip input:disabled + span{opacity:.55;cursor:default}
 .tent{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:14px;padding-bottom:7px;cursor:pointer}
-.tent input{width:17px;height:17px;accent-color:var(--alert);margin:0}
+.tent input:checked{background:var(--pink)}
 .link-btn{border:0;background:none;padding:0 0 7px;font-weight:800;font-size:14px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .msg{margin:0;padding:0 16px 12px;background:var(--card);color:var(--alert);font-weight:800;font-size:14px}
 
@@ -209,7 +223,22 @@ button,input{font:inherit;color:inherit}
 .rel{font-weight:800;font-size:13px;color:var(--muted)}
 .empty{margin:0;color:var(--muted);font-weight:700}
 
-.list{padding:16px;display:grid;gap:20px}
+.list{padding:12px 16px;display:grid;gap:12px}
+/* List view rows are compact: one short card per event. */
+.list .evs{gap:7px}
+.list .ev{padding:5px 8px 5px 8px;box-shadow:2px 3px 0 var(--line);border-radius:12px}
+.list .ev-main{gap:10px}
+.list .ev-date{width:40px;padding:2px 0;border-radius:9px}
+.list .ev-date b{font-size:17px}
+.list .ev-date small{font-size:10px}
+.list .ev-body{gap:1px}
+.list .ev-title{font-size:14px}
+.list .ev-meta{font-size:12.5px}
+.list .ev-chips .chip{font-size:9.5px;padding:0 6px}
+.list .ev-del{min-width:30px;height:30px}
+.list .ev-del svg{width:24px;height:24px}
+.list .mhead{margin:0 0 6px;font-size:13px}
+.list-more{justify-self:center}
 .list-tools{display:flex;justify-content:flex-end}
 .mhead{margin:0 0 10px;display:flex;align-items:center;gap:10px;font:600 15px var(--f-display);letter-spacing:.08em}
 .mcount{font:800 11px var(--f-body);background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:1px 8px;letter-spacing:0}
@@ -247,6 +276,45 @@ button,input{font:inherit;color:inherit}
 .menu-head.pink{background:var(--pink)}
 /* The to-do list and, under it, the backup tools share the column beside the program. */
 .lower-side{display:grid;gap:18px;align-content:start;min-width:0}
+/* GÖSTER: a chip row attached to the bottom of the calendar card. */
+.fbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:10px 14px;border-top:var(--bw) solid var(--line);background:var(--card);border-radius:0 0 calc(var(--r) - 2px) calc(var(--r) - 2px)}
+.fchips{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.fchip{display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--line);border-radius:999px;background:var(--surface);color:var(--text);padding:5px 12px;font-weight:700;font-size:13px;box-shadow:2px 2px 0 var(--line);cursor:pointer}
+.fchip[aria-pressed="true"]{background:var(--pink);color:var(--on-tint)}
+.fchip .cnt{margin-left:0;font-size:12px}
+.fchip.add{color:var(--muted)}
+.fbar .fmore{left:0;right:auto;width:max-content;max-width:min(420px,84vw);display:flex;flex-wrap:wrap;gap:8px;padding:10px;overflow:visible}
+.kedit-wrap{position:relative;margin-left:auto}
+.kedit-pop{top:auto;bottom:calc(100% + 8px);left:auto;right:0;width:min(380px,88vw);padding:0;gap:0;justify-items:stretch;overflow:hidden}
+.kedit-pop .filters{display:grid;padding:0}
+.kedit-pop .kform{border-top:1.5px dashed var(--line)}
+/* İzlence */
+.izl-top-mini{display:flex;align-items:center;gap:14px;padding:12px 14px 8px}
+.izl-legend{flex:1;min-width:0;display:grid;gap:5px}
+.izl-legend>span{display:flex;align-items:center;gap:7px;font-weight:700;font-size:13px;min-width:0}
+.izl-legend .lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.izl-legend b{margin-left:auto;font-variant-numeric:tabular-nums}
+.izl-empty{margin:0;color:var(--muted);font-weight:700;font-size:13px;padding:6px 0}
+.izl-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 14px 12px}
+.donut{flex:none;display:block}
+.donut text{font:600 6.5px var(--f-display);fill:var(--text)}
+.modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;background:rgba(42,41,51,.35)}
+.modal-card{width:min(560px,100%);max-height:calc(100vh - 32px);overflow:auto;background:var(--surface)}
+.modal-head{display:flex;align-items:center;gap:8px;padding:8px 10px 8px 52px}
+.modal-head>span{flex:1;text-align:center}
+.izl-detail{display:grid;gap:14px;padding:16px}
+.izl-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.izl-nav{display:flex;align-items:center;gap:6px;margin-left:auto}
+.izl-label{font-weight:800;min-width:130px;text-align:center}
+.izl-chart{display:flex;justify-content:center}
+.izl-table{display:grid;border:1.5px solid var(--line);border-radius:12px;overflow:hidden}
+.izl-table .izl-empty{padding:12px}
+.izl-row{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto 52px;align-items:center;gap:10px;padding:8px 12px;border-bottom:1.5px solid var(--line);font-weight:700;cursor:pointer}
+.izl-row:last-child{border-bottom:0}
+.izl-row.off{color:var(--muted)}
+.izl-row .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.izl-total{background:var(--card);cursor:default}
+.izl-note{margin:0;font-size:12.5px;font-weight:700;color:var(--muted)}
 /* The GÖSTER box lets its "more kinds" panel spill over what is below it. */
 .menu.show{overflow:visible;position:relative;z-index:3}
 .menu.show .menu-head{border-radius:calc(var(--r) - 2px) calc(var(--r) - 2px) 0 0}
@@ -261,7 +329,7 @@ button,input{font:inherit;color:inherit}
 .tform input::placeholder{color:var(--muted);font-weight:500}
 .todos{list-style:none;margin:0;padding:0}
 .todo{display:flex;align-items:center;gap:10px;padding:8px 10px 8px 12px;border-bottom:1.5px solid var(--line)}
-.todo input{flex:none;width:17px;height:17px;margin:0;accent-color:var(--teal)}
+.todo input{flex:none}
 .todo span{flex:1;min-width:0;font-weight:700;overflow-wrap:anywhere}
 .todo.done span{text-decoration:line-through;color:var(--muted)}
 .tdel{flex:none;border:0;border-radius:999px;background:none;width:26px;height:26px;font-weight:800;font-size:16px;line-height:1;color:var(--muted);cursor:pointer}
@@ -397,8 +465,6 @@ button,input{font:inherit;color:inherit}
   .sound-btn svg{width:19px;height:19px}
   .brand{padding:0 46px}
   .board{grid-template-columns:minmax(0,1fr)}
-  .filters{display:flex;flex-wrap:wrap;gap:6px;padding:10px}
-  .frow,.frow:last-child{border:1.5px solid var(--line);border-radius:999px;padding:5px 12px;font-size:14px}
   .tabs{flex:1 1 100%;padding-bottom:0}
   .tab{flex:1}
   .month{padding:10px}
@@ -477,8 +543,8 @@ button,input{font:inherit;color:inherit}
             <button class="tab" role="tab" type="button" data-view="list" id="tab-list">Liste</button>
           </div>
           <div class="nav" id="nav">
-            <button class="icon-btn" id="prev" type="button" aria-label="Önceki ay">‹</button>
-            <button class="icon-btn" id="next" type="button" aria-label="Sonraki ay">›</button>
+            <button class="icon-btn" id="prev" type="button" aria-label="Önceki ay"><i class="chev left"></i></button>
+            <button class="icon-btn" id="next" type="button" aria-label="Sonraki ay"><i class="chev right"></i></button>
             <button class="small-btn sun" id="today-btn" type="button">Bugün</button>
           </div>
           <button class="small-btn" id="past-btn" type="button" hidden>Geçmişi göster</button>
@@ -492,6 +558,24 @@ button,input{font:inherit;color:inherit}
         <div class="day" id="day" inert></div>
       </div>
       <div id="list-view" class="list" hidden></div>
+      <div class="fbar">
+        <span class="fl">Göster</span>
+        <div class="fchips" id="filters"></div>
+        <div class="kedit-wrap">
+          <button class="fchip add" id="kedit-btn" type="button" aria-expanded="false" aria-controls="kedit-pop">Türleri ekle / düzenle</button>
+          <div class="pop kedit-pop" id="kedit-pop" hidden>
+            <div class="filters" id="kedit-list"></div>
+            <form id="kform" class="kform" autocomplete="off" novalidate hidden>
+              <label class="fld"><span class="fl">Yeni tür</span><input id="k-name" placeholder="Örn. Kulüp" maxlength="20"></label>
+              <div class="kcolors" role="radiogroup" aria-label="Renk" id="kcolors"></div>
+              <div class="cform-actions">
+                <button class="small-btn sun" type="submit">Ekle</button>
+                <button class="link-btn" id="k-cancel" type="button">Vazgeç</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </section>
 
     <form id="add" class="addbar sticker" autocomplete="off" novalidate>
@@ -505,12 +589,12 @@ button,input{font:inherit;color:inherit}
         <div class="pickers">
           <div class="picker">
             <span id="kinds-l" class="fl">Tür</span>
-            <button type="button" class="pick-btn" id="kind-btn" aria-expanded="false" aria-controls="kind-pop"><span class="sw" id="kind-sw"></span><span id="kind-name">Sınav</span><span aria-hidden="true">▾</span></button>
+            <button type="button" class="pick-btn" id="kind-btn" aria-expanded="false" aria-controls="kind-pop"><span class="sw" id="kind-sw"></span><span id="kind-name">Sınav</span><i class="chev" aria-hidden="true"></i></button>
             <div class="pop" id="kind-pop" hidden><div class="kchips" id="kchips" role="radiogroup" aria-labelledby="kinds-l"></div></div>
           </div>
           <div class="picker">
             <span id="rep-l" class="fl">Tekrar</span>
-            <button type="button" class="pick-btn" id="rep-btn" aria-expanded="false" aria-controls="rep-pop"><span aria-hidden="true">↻</span><span id="rep-name">Tek sefer</span><span aria-hidden="true">▾</span></button>
+            <button type="button" class="pick-btn" id="rep-btn" aria-expanded="false" aria-controls="rep-pop"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"/></svg><span id="rep-name">Tek sefer</span><i class="chev" aria-hidden="true"></i></button>
             <div class="pop" id="rep-pop" role="radiogroup" aria-labelledby="rep-l" hidden>
               <div class="kchips">
                 <label class="kchip" style="--k:var(--lilac)"><input class="sr" type="radio" name="rep" value="none" checked><span>Tek sefer</span></label>
@@ -539,27 +623,21 @@ button,input{font:inherit;color:inherit}
       <p id="f-msg" class="msg" role="status" hidden></p>
     </form>
 
-    <aside class="rail">
-      <div class="rail-col">
-      <div class="menu sticker show">
-        <div class="menu-head">GÖSTER</div>
-        <div class="filters" id="filters"></div>
-        <form id="kform" class="kform" autocomplete="off" novalidate hidden>
-          <label class="fld"><span class="fl">Yeni tür</span><input id="k-name" placeholder="Örn. Kulüp" maxlength="20"></label>
-          <div class="kcolors" role="radiogroup" aria-label="Renk" id="kcolors"></div>
-          <div class="cform-actions">
-            <button class="small-btn sun" type="submit">Ekle</button>
-            <button class="link-btn" id="k-cancel" type="button">Vazgeç</button>
-          </div>
-        </form>
-      </div>
-      </div>
-      <div class="menu sticker">
-        <div class="menu-head sun">SIRADAKİ</div>
-        <div class="next-box" id="next-box"></div>
-      </div>
-      <p class="status" id="status">Yükleniyor…</p>
-    </aside>
+    <div class="menu sticker todo-box">
+      <div class="menu-head pink">YAPILACAKLAR</div>
+      <form id="tform" class="tform" autocomplete="off" novalidate>
+        <label class="sr" for="t-text">Yapılacak</label>
+        <input id="t-text" placeholder="Ne yapılacak?" maxlength="120">
+        <button class="small-btn sun" type="submit">Ekle</button>
+      </form>
+      <ul class="todos" id="todos"></ul>
+      <button class="link-btn tclear" id="t-clear" type="button" hidden>Tamamlananları temizle</button>
+    </div>
+    <div class="menu sticker izl" id="izl">
+      <div class="menu-head teal">İZLENCE</div>
+      <div class="izl-mini" id="izl-mini"></div>
+    </div>
+    <p class="status" id="status">Yükleniyor…</p>
   </div>
 
   <div class="lower">
@@ -569,7 +647,7 @@ button,input{font:inherit;color:inherit}
         <div class="prog-tools">
           <span class="rel" id="cf-sum"></span>
           <div class="slots-wrap">
-            <button class="small-btn" id="slots-btn" type="button" aria-expanded="false" aria-controls="slots-pop">Saatler ▾</button>
+            <button class="small-btn" id="slots-btn" type="button" aria-expanded="false" aria-controls="slots-pop">Saatler <i class="chev" aria-hidden="true"></i></button>
             <form class="pop slots-pop" id="slots-pop" autocomplete="off" novalidate hidden>
               <div class="seg" role="radiogroup" aria-label="Saat düzeni">
                 <label class="kchip" style="--k:var(--lilac)"><input class="sr" type="radio" name="slmode" value="regular" checked><span>Düzenli</span></label>
@@ -606,15 +684,9 @@ button,input{font:inherit;color:inherit}
       </form>
     </section>
     <div class="lower-side">
-      <div class="menu sticker todo-box">
-        <div class="menu-head pink">YAPILACAKLAR</div>
-        <form id="tform" class="tform" autocomplete="off" novalidate>
-          <label class="sr" for="t-text">Yapılacak</label>
-          <input id="t-text" placeholder="Ne yapılacak?" maxlength="120">
-          <button class="small-btn sun" type="submit">Ekle</button>
-        </form>
-        <ul class="todos" id="todos"></ul>
-        <button class="link-btn tclear" id="t-clear" type="button" hidden>Tamamlananları temizle</button>
+      <div class="menu sticker">
+        <div class="menu-head sun">SIRADAKİ</div>
+        <div class="next-box" id="next-box"></div>
       </div>
       <div class="menu sticker backup">
         <div class="menu-head lilac">YEDEK</div>
@@ -627,6 +699,12 @@ button,input{font:inherit;color:inherit}
       </div>
     </div>
   </div>
+  </div>
+</div>
+<div class="modal" id="izl-modal" hidden>
+  <div class="modal-card sticker" role="dialog" aria-modal="true" aria-labelledby="izl-title">
+    <div class="menu-head teal modal-head"><span id="izl-title">İZLENCE</span><button class="icon-btn" id="izl-close" type="button" aria-label="Kapat"><span class="x-mark">×</span></button></div>
+    <div class="izl-detail" id="izl-detail"></div>
   </div>
 </div>
 <div class="toast" id="toast" role="status" hidden></div>
@@ -683,7 +761,7 @@ button,input{font:inherit;color:inherit}
     f15Start: null,
     picks: (() => { try { const v = JSON.parse(saved("tk.picks2")); return Array.isArray(v) ? new Set(v) : null; } catch (e) { return null; } })(),
     moreOpen: false, dayOpen: false,
-    showPast: false, ym: [now.getFullYear(), now.getMonth()], sel: TODAY, editing: null,
+    showPast: false, listLimit: 6, ym: [now.getFullYear(), now.getMonth()], sel: TODAY, editing: null,
     courses: [], courseForm: null
   };
 
@@ -1062,10 +1140,15 @@ button,input{font:inherit;color:inherit}
     const box = $("#day"), k = S.sel, wd = dow(parseKey(k));
     box.replaceChildren();
     const head = el("div", "day-head"), nav = el("div", "day-nav");
-    const btn = (text, label, fn) => { const b = el("button", "icon-btn", text); b.type = "button"; b.setAttribute("aria-label", label); b.onclick = fn; nav.append(b); };
-    btn("‹", "Önceki gün", () => shiftDay(-1));
-    btn("›", "Sonraki gün", () => shiftDay(1));
-    btn("×", "Gün programını kapat", closeDay);
+    const btn = (cls, label, fn) => {
+      const b = el("button", "icon-btn");
+      b.type = "button"; b.setAttribute("aria-label", label); b.onclick = fn;
+      b.append(cls ? el("i", "chev " + cls) : el("span", "x-mark", "×"));
+      nav.append(b);
+    };
+    btn("left", "Önceki gün", () => shiftDay(-1));
+    btn("right", "Sonraki gün", () => shiftDay(1));
+    btn("", "Gün programını kapat", closeDay);
     const t = el("div", "day-title");
     t.append(el("h3", null, longDate(k)), el("span", "rel", rel(k)));
     head.append(t, nav);
@@ -1093,7 +1176,9 @@ button,input{font:inherit;color:inherit}
   function renderList(clash) {
     const all = visible().sort(byTime);
     const past = all.filter(e => e.date < TODAY);
-    const shown = S.showPast ? all : all.filter(e => e.date >= TODAY);
+    const pool = S.showPast ? all : all.filter(e => e.date >= TODAY);
+    // Six at a time; "Daha fazla" adds six more.
+    const shown = pool.slice(0, S.listLimit);
     $("#title").textContent = S.showPast ? "Tüm etkinlikler" : "Yaklaşanlar";
     const pb = $("#past-btn");
     pb.textContent = S.showPast ? "Geçmişi gizle" : `Geçmişi göster (${past.length})`;
@@ -1119,16 +1204,23 @@ button,input{font:inherit;color:inherit}
       }
       ul.append(card(e, true, clash));
     }
+    if (pool.length > shown.length) {
+      const more = el("button", "small-btn list-more", `Daha fazla göster (${pool.length - shown.length})`);
+      more.type = "button";
+      more.onclick = () => { S.listLimit += 6; render(); };
+      box.append(more);
+    }
   }
 
-  // Hepsi, Sınav, Prova and Program always stay on top; the other kinds sit in a panel that opens over the page.
+  // GÖSTER is a row of chips under the calendar: Hepsi, Sınav, Prova and Program always show; the other kinds open
+  // in a small panel. "Türleri ekle / düzenle" opens its own panel with the rename/delete rows and the add form.
   const TOP_KINDS = ["sinav", "prova"];
   function renderFilters() {
     const f = $("#filters"), counts = {};
     f.replaceChildren();
     S.events.forEach(e => { counts[kindId(e)] = (counts[kindId(e)] || 0) + 1; });
-    const row = (k, label, c, n) => {
-      const b = el("button", "frow");
+    const chip = (k, label, c, n) => {
+      const b = el("button", "fchip");
       b.type = "button";
       b.setAttribute("aria-pressed", String(k === "all" ? allPicked() : S.picks.has(k)));
       if (c) { const sw = el("span", "sw"); sw.style.setProperty("--k", c); b.append(sw); }
@@ -1137,34 +1229,30 @@ button,input{font:inherit;color:inherit}
       return b;
     };
     const kinds = Object.entries(KINDS).map(([k, v]) => [k, v.label, v.c, counts[k] || 0]);
-    if (S.kindEdit) {
-      for (const [k, label, c, n] of kinds) if (k !== "diger") f.append(kindEditRow(k, label, c, n));
-    } else {
-      f.append(row("all", "Hepsi", null, S.events.length));
-      for (const r of kinds) if (TOP_KINDS.includes(r[0])) f.append(row(...r));
-      f.append(row("ders", "Program", "var(--lilac)", new Set(S.courses.map(c => c.code)).size));
-      const rest = kinds.filter(([k, , , n]) => !TOP_KINDS.includes(k) && (k !== "diger" || n));
-      if (rest.length) {
-        const wrap = el("div", "fmore-wrap"), t = el("button", "frow add", S.moreOpen ? "Daha az ▴" : `+ ${rest.length} tür daha ▾`);
-        t.type = "button";
-        t.setAttribute("aria-expanded", String(S.moreOpen));
-        t.onclick = () => { S.moreOpen = !S.moreOpen; render(); };
-        wrap.append(t);
-        if (S.moreOpen) {
-          const panel = el("div", "fmore");
-          rest.forEach(r => panel.append(row(...r)));
-          wrap.append(panel);
-        }
-        f.append(wrap);
-      }
-    }
-    // One button opens kind editing: rename, recolour or delete each kind, and add new ones in the form below.
-    if (writable()) {
-      const t = el("button", "frow add", S.kindEdit ? "Bitti" : "Türleri ekle / düzenle");
+    f.append(chip("all", "Hepsi", null, S.events.length));
+    for (const r of kinds) if (TOP_KINDS.includes(r[0])) f.append(chip(...r));
+    f.append(chip("ders", "Program", "var(--lilac)", new Set(S.courses.map(c => c.code)).size));
+    const rest = kinds.filter(([k, , , n]) => !TOP_KINDS.includes(k) && (k !== "diger" || n));
+    if (rest.length) {
+      const wrap = el("div", "fmore-wrap"), t = el("button", "fchip add");
       t.type = "button";
-      t.onclick = () => { S.kindEdit = !S.kindEdit; S.kindForm = S.kindEdit; S.kindAsk = null; S.kindRename = null; S.moreOpen = false; render(); };
-      f.append(t);
+      t.setAttribute("aria-expanded", String(S.moreOpen));
+      t.append(el("span", null, S.moreOpen ? "Daha az" : `+${rest.length} tür`), el("i", "chev" + (S.moreOpen ? " up" : "")));
+      t.onclick = () => { S.moreOpen = !S.moreOpen; render(); };
+      wrap.append(t);
+      if (S.moreOpen) {
+        const panel = el("div", "fmore");
+        rest.forEach(r => panel.append(chip(...r)));
+        wrap.append(panel);
+      }
+      f.append(wrap);
     }
+    const list = $("#kedit-list");
+    list.replaceChildren();
+    if (S.kindEdit) for (const [k, label, c, n] of kinds) if (k !== "diger") list.append(kindEditRow(k, label, c, n));
+    $("#kedit-pop").hidden = !S.kindEdit;
+    $("#kedit-btn").setAttribute("aria-expanded", String(S.kindEdit));
+    $("#kedit-btn").hidden = !writable();
     renderKindForm();
   }
 
@@ -1243,6 +1331,10 @@ button,input{font:inherit;color:inherit}
     } catch (err) { writeFailed(err); }
   });
   $("#k-cancel").onclick = () => { S.kindForm = false; S.kindEdit = false; render(); };
+  $("#kedit-btn").onclick = () => { S.kindEdit = !S.kindEdit; S.kindForm = S.kindEdit; S.kindAsk = null; S.kindRename = null; S.moreOpen = false; render(); };
+  document.addEventListener("click", ev => {
+    if (S.kindEdit && !ev.composedPath().some(n => n.classList && n.classList.contains("kedit-wrap"))) { S.kindEdit = false; S.kindForm = false; render(); }
+  });
 
   // In edit mode each kind gets a delete button; deleting asks whether its events move to "Diğer" or go with it.
   function kindEditRow(k, label, c, n) {
@@ -1384,7 +1476,7 @@ button,input{font:inherit;color:inherit}
       head.append(el("span", "bn-count", count(dayDiff(first.date))), el("span", "bn-text", first.title));
       if (up.length > 1) head.append(el("span", "bn-more", `+${up.length - 1} daha`));
     }
-    head.append(el("span", "bn-chev", bannerOpen ? "▴" : "▾"));
+    head.append(el("i", "chev bn-chev" + (bannerOpen ? " up" : "")));
     head.onclick = () => { bannerOpen = !bannerOpen; saved("tk.banner", bannerOpen ? "open" : "closed"); renderBanner(); };
     box.append(head);
     if (!bannerOpen) return;
@@ -1422,6 +1514,7 @@ button,input{font:inherit;color:inherit}
     renderNext();
     renderTodos();
     renderLinks();
+    renderIzl();
     renderBanner();
     v === "list" ? renderList(clash) : v === "week" ? renderWeek(clash) : v === "f15" ? renderF15(clash) : renderMonth(clash);
     if (open) renderDay(groupByDay(visible()), clash);
@@ -1868,7 +1961,7 @@ button,input{font:inherit;color:inherit}
   $("#prev").onclick = () => S.view === "week" ? shiftWeek(-1) : S.view === "f15" ? shiftF15(-1) : shiftMonth(-1);
   $("#next").onclick = () => S.view === "week" ? shiftWeek(1) : S.view === "f15" ? shiftF15(1) : shiftMonth(1);
   $("#today-btn").onclick = () => openDay(TODAY, false);
-  $("#past-btn").onclick = () => { S.showPast = !S.showPast; render(); };
+  $("#past-btn").onclick = () => { S.showPast = !S.showPast; S.listLimit = 6; render(); };
 
   $("#f-date").value = TODAY;
 
@@ -1916,6 +2009,146 @@ button,input{font:inherit;color:inherit}
     persist().then(() => { $("#t-text").value = ""; $("#t-text").focus(); }, writeFailed);
   });
   $("#t-clear").onclick = () => removeTodos(t => t.done, "Tamamlananlar temizlendi");
+
+  /* İzlence: how the hours of a day, week or month split between kinds (Program = the weekly classes).
+     An event with a time range in its note ("14.00–15.30", "21.00'e kadar") counts that long; any other timed
+     event counts one hour; all-day events and reminders are left out. Classes count their slots (50 min each at METU). */
+  const IZL = {period: ["day", "week", "month"].includes(saved("tk.izlp")) ? saved("tk.izlp") : "week", offset: 0,
+    ex: new Set((() => { try { return JSON.parse(saved("tk.izlex") || "[]"); } catch (e) { return []; } })())};
+  function evMinutes(e) {
+    if (e.reminder || allDay(e.time)) return 0;
+    const st = mins(e.time);
+    if (st == null) return 0;
+    const rng = /(\d{1,2})[.:](\d{2})\s*[–-]\s*(\d{1,2})[.:](\d{2})/.exec(e.note);
+    if (rng) { const a = +rng[1] * 60 + +rng[2], b = +rng[3] * 60 + +rng[4]; if (b > a) return b - a; }
+    const until = /(\d{1,2})[.:](\d{2})\S*\s+kadar/i.exec(e.note);
+    if (until) { const b = +until[1] * 60 + +until[2]; if (b > st) return b - st; }
+    return 60;
+  }
+  function izlRange(period, offset) {
+    const t = parseKey(TODAY);
+    if (period === "day") {
+      const d = new Date(t.getFullYear(), t.getMonth(), t.getDate() + offset);
+      return [d, d, longDate(keyOf(d))];
+    }
+    if (period === "week") {
+      const w = weekStart(TODAY), a = new Date(w.getFullYear(), w.getMonth(), w.getDate() + 7 * offset), b = new Date(a.getFullYear(), a.getMonth(), a.getDate() + 6);
+      return [a, b, `${a.getDate()} ${MONTHS[a.getMonth()]} – ${b.getDate()} ${MONTHS[b.getMonth()]}`];
+    }
+    const a = new Date(t.getFullYear(), t.getMonth() + offset, 1), b = new Date(t.getFullYear(), t.getMonth() + offset + 1, 0);
+    return [a, b, `${MONTHS[a.getMonth()]} ${a.getFullYear()}`];
+  }
+  function izlData(period, offset) {
+    const [a, b, label] = izlRange(period, offset), ka = keyOf(a), kb = keyOf(b), tot = {};
+    for (const e of S.occ) if (e.date >= ka && e.date <= kb) { const m = evMinutes(e); if (m) tot[kindId(e)] = (tot[kindId(e)] || 0) + m; }
+    for (let d = new Date(a); d <= b; d.setDate(d.getDate() + 1))
+      for (const c of coursesOn(keyOf(d), true)) tot.ders = (tot.ders || 0) + c.hours * 60 - (c.start % 60 === 40 ? 10 : 0);
+    const rows = [...Object.keys(KINDS), "ders"].filter(k => tot[k]).map(k => ({
+      k, m: tot[k], on: !IZL.ex.has(k),
+      label: k === "ders" ? "Program" : KINDS[k].label, c: k === "ders" ? "var(--lilac)" : KINDS[k].c
+    }));
+    return {rows, label, total: rows.filter(r => r.on).reduce((n, r) => n + r.m, 0)};
+  }
+  const fmtDur = m => { const h = Math.floor(m / 60), r = Math.round(m % 60); return h && r ? `${h} sa ${r} dk` : h ? `${h} sa` : `${r} dk`; };
+  const pct = (m, total) => total ? `%${Math.round(m / total * 100)}` : "–";
+  // Donut drawn with SVG circles: each slice is a dash on a ring of circumference 100, with a thin gap between slices.
+  function donut(rows, total, size) {
+    const NS = "http://www.w3.org/2000/svg", svg = document.createElementNS(NS, "svg"), R = 15.9155;
+    svg.setAttribute("viewBox", "0 0 42 42");
+    svg.setAttribute("width", size);
+    svg.setAttribute("height", size);
+    svg.setAttribute("class", "donut");
+    svg.setAttribute("role", "img");
+    const ring = (color, dash, off, title) => {
+      const c = document.createElementNS(NS, "circle");
+      c.setAttribute("cx", "21"); c.setAttribute("cy", "21"); c.setAttribute("r", String(R));
+      c.setAttribute("fill", "none"); c.setAttribute("stroke-width", "7");
+      c.style.stroke = color;
+      if (dash != null) { c.setAttribute("stroke-dasharray", `${dash} ${100 - dash}`); c.setAttribute("stroke-dashoffset", String(off)); }
+      if (title) { const t = document.createElementNS(NS, "title"); t.textContent = title; c.append(t); }
+      svg.append(c);
+    };
+    ring("var(--grid)");
+    const on = rows.filter(r => r.on), gap = on.length > 1 ? 1 : 0;
+    let acc = 0;
+    for (const r of on) {
+      const share = r.m / total * 100;
+      ring(r.c, Math.max(share - gap, 0.4), 25 - acc, `${r.label}: ${fmtDur(r.m)} (${pct(r.m, total)})`);
+      acc += share;
+    }
+    const txt = document.createElementNS(NS, "text");
+    txt.setAttribute("x", "21"); txt.setAttribute("y", "22.6"); txt.setAttribute("text-anchor", "middle");
+    txt.textContent = total ? `${Math.round(total / 60)} sa` : "0";
+    svg.append(txt);
+    svg.setAttribute("aria-label", on.map(r => `${r.label} ${pct(r.m, total)}`).join(", ") || "Kayıtlı süre yok");
+    return svg;
+  }
+  function renderIzl() {
+    const box = $("#izl-mini");
+    box.replaceChildren();
+    const d = izlData("week", 0), on = d.rows.filter(r => r.on).sort((x, y) => y.m - x.m);
+    const top = el("div", "izl-top-mini"), legend = el("div", "izl-legend");
+    top.append(donut(d.rows, d.total, 104), legend);
+    if (!on.length) legend.append(el("span", "izl-empty", "Bu hafta kayıtlı süre yok."));
+    for (const r of on.slice(0, 4)) {
+      const row = el("span"), sw = el("i", "sw");
+      sw.style.setProperty("--k", r.c);
+      row.append(sw, el("span", "lbl", r.label), el("b", null, pct(r.m, d.total)));
+      legend.append(row);
+    }
+    const foot = el("div", "izl-foot"), more = el("button", "small-btn sun", "Detay");
+    more.type = "button";
+    more.onclick = openIzl;
+    foot.append(el("span", "rel", `Bu hafta · ${fmtDur(d.total)}`), more);
+    box.append(top, foot);
+    if (!$("#izl-modal").hidden) renderIzlDetail();
+  }
+  function renderIzlDetail() {
+    const box = $("#izl-detail"), d = izlData(IZL.period, IZL.offset);
+    box.replaceChildren();
+    const bar = el("div", "izl-bar");
+    for (const [p, label] of [["day", "Gün"], ["week", "Hafta"], ["month", "Ay"]]) {
+      const b = el("button", "fchip", label);
+      b.type = "button";
+      b.setAttribute("aria-pressed", String(IZL.period === p));
+      b.onclick = () => { IZL.period = p; IZL.offset = 0; saved("tk.izlp", p); renderIzlDetail(); };
+      bar.append(b);
+    }
+    const nav = el("div", "izl-nav");
+    const arrow = (dir, lab, n) => { const b = el("button", "icon-btn"); b.type = "button"; b.setAttribute("aria-label", lab); b.append(el("i", "chev " + dir)); b.onclick = () => { IZL.offset += n; renderIzlDetail(); }; nav.append(b); };
+    arrow("left", "Önceki", -1);
+    nav.append(el("span", "izl-label", d.label));
+    arrow("right", "Sonraki", 1);
+    bar.append(nav);
+    const chart = el("div", "izl-chart");
+    chart.append(donut(d.rows, d.total, 210));
+    const table = el("div", "izl-table");
+    if (!d.rows.length) table.append(el("p", "izl-empty", "Bu aralıkta kayıtlı süre yok."));
+    for (const r of [...d.rows].sort((x, y) => y.m - x.m)) {
+      const row = el("label", "izl-row" + (r.on ? "" : " off")), cb = el("input"), sw = el("i", "sw");
+      cb.type = "checkbox";
+      cb.checked = r.on;
+      cb.onchange = () => {
+        cb.checked ? IZL.ex.delete(r.k) : IZL.ex.add(r.k);
+        saved("tk.izlex", JSON.stringify([...IZL.ex]));
+        renderIzl();
+      };
+      sw.style.setProperty("--k", r.c);
+      row.append(cb, sw, el("span", null, r.label), el("span", "num", fmtDur(r.m)), el("span", "num", r.on ? pct(r.m, d.total) : "–"));
+      table.append(row);
+    }
+    if (d.rows.length) {
+      const t = el("div", "izl-row izl-total");
+      t.append(el("span"), el("span"), el("span", null, "Toplam (seçili)"), el("span", "num", fmtDur(d.total)), el("span", "num", d.total ? "%100" : "–"));
+      table.append(t);
+    }
+    box.append(bar, chart, table, el("p", "izl-note", "Saat aralığı yazılmamış etkinlikler 1 saat sayılır; tüm gün süren etkinlikler ve hatırlatmalar sayılmaz. Kutucukları işaretleyerek türleri dahil et ya da çıkar."));
+  }
+  function openIzl() { $("#izl-modal").hidden = false; renderIzlDetail(); $("#izl-close").focus(); }
+  function closeIzl() { $("#izl-modal").hidden = true; }
+  $("#izl-close").onclick = closeIzl;
+  $("#izl-modal").addEventListener("click", ev => { if (ev.target === ev.currentTarget) closeIzl(); });
+  document.addEventListener("keydown", ev => { if (ev.key === "Escape" && !$("#izl-modal").hidden) closeIzl(); });
 
   /* backup: download, restore and calendar export */
   function download(name, text, type) {
@@ -2291,3 +2524,4 @@ button,input{font:inherit;color:inherit}
 </script>
 </body>
 </html>
+

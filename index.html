@@ -50,7 +50,7 @@ html{position:relative}
 .sound-btn .w{fill:none}
 /* Profile: the user's avatar sits next to the sound switch and opens a small avatar maker. */
 .tb-right{grid-column:3;justify-self:end;display:flex;align-items:center;gap:10px;position:relative;z-index:5}
-.prof-btn{width:42px;height:42px;padding:0;border:0;border-radius:50%;background:none;box-shadow:2px 3px 0 var(--line);cursor:pointer;transition:transform .14s,box-shadow .14s}
+.prof-btn{width:54px;height:54px;padding:0;border:0;border-radius:50%;background:none;box-shadow:2px 3px 0 var(--line);cursor:pointer;transition:transform .14s,box-shadow .14s}
 .prof-btn svg{display:block;width:100%;height:100%}
 .prof-btn:hover{transform:translate(-1px,-2px);box-shadow:3px 4px 0 var(--line)}
 .prof-card{width:min(780px,100%)}
@@ -66,10 +66,6 @@ html{position:relative}
 .av-opt[aria-pressed="true"]{background:var(--lilac);box-shadow:2px 3px 0 var(--line)}
 .av-sw{width:28px;height:28px;padding:0;border:var(--bw) solid var(--line);border-radius:50%;cursor:pointer}
 .av-sw[aria-pressed="true"]{box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--line)}
-.av-seg{display:inline-flex;border:var(--bw) solid var(--line);border-radius:999px;overflow:hidden}
-.av-seg button{border:0;background:var(--surface);color:var(--text);font:600 14px var(--f-display);padding:5px 16px;cursor:pointer}
-.av-seg button+button{border-left:var(--bw) solid var(--line)}
-.av-seg button[aria-pressed="true"]{background:var(--pink)}
 .sound-btn[aria-pressed="false"]{background:var(--card)}
 .sound-btn[aria-pressed="false"] svg{fill:var(--mist)}
 .sound-btn[aria-pressed="true"] .snd-off,.sound-btn[aria-pressed="false"] .snd-on{display:none}
@@ -480,7 +476,7 @@ input::placeholder{opacity:1}
 }
 @media (max-width:600px){
   .sound-btn{width:36px;height:36px}
-  .prof-btn{width:36px;height:36px}
+  .prof-btn{width:46px;height:46px}
   .tb-right{gap:8px}
   .prof{grid-template-columns:minmax(0,1fr)}
   .prof-prev{position:static}
@@ -2566,34 +2562,54 @@ input::placeholder{opacity:1}
   const AV_HAIRC = ["#2E2A33", "#5A3A28", "#8A5A3B", "#B5652E", "#E2B85A", "#F1DCA0", "#B9B4B0", "#F2F0EE", "#F4A6C0", "#B9ADE8", "#8EC5E8", "#8ED3B0"];
   const AV_CLOTH = ["#F8CDE1", "#F5B5B5", "#FBCB96", "#FDE59A", "#C9EBD6", "#8ED3C9", "#A6DCE2", "#9ED8EE", "#D6CCF5", "#B9ADE8", "#FFFFFF", "#3A3A48"];
   const AV_BGS = ["#D6CCF5", "#F8CDE1", "#FDE59A", "#C9EBD6", "#A6DCE2", "#FBCB96", "#F3F1F6", "#B9ADE8"];
-  // back sits behind the head, front on top of it; top (a bun) hides under a hat; over (a scarf) covers the shoulders.
-  const AV_HAIR = {
-    f: [
-      {name: "Uzun düz", back: c => avP("M28 48 Q26 22 50 22 Q74 22 72 48 L76 92 Q50 98 24 92Z", c), front: c => avP("M30 50 Q28 26 50 25 Q72 26 70 50 Q66 37 56 35 Q46 41 30 50Z", c)},
-      {name: "Kahküllü kısa", back: c => avP("M27 50 Q24 22 50 22 Q76 22 73 50 L75 70 Q68 73 62 68 L38 68 Q32 73 25 70Z", c), front: c => avP("M31 46 Q31 25 50 25 Q69 25 69 46 Q50 40 31 46Z", c)},
-      {name: "Topuz", top: c => avC(50, 20, 10, c), front: c => avP("M29.5 50 Q29 28 50 28 Q71 28 70.5 50 Q66 37 50 37 Q34 37 29.5 50Z", c)},
-      {name: "At kuyruğu", back: c => avP("M66 34 Q92 40 85 78 Q79 62 68 52Z", c), front: c => avP("M29.5 50 Q29 28 50 28 Q71 28 70.5 50 Q66 37 50 37 Q34 37 29.5 50Z", c)},
-      {name: "Kıvırcık", back: c => avDots([[27, 47], [28, 35], [36, 26], [50, 22], [64, 26], [72, 35], [73, 47], [25, 59], [75, 59], [26, 71], [74, 71]], 9, c), front: c => avDots([[37, 33], [49, 30], [61, 33]], 7, c)},
-      {name: "Başörtüsü", scarf: true, over: c => avP("M21 58 Q21 22 50 22 Q79 22 79 58 Q80 77 69 85 Q50 93 31 85 Q20 77 21 58Z", c),
-        front: () => `<path d="M30.5 52 Q32 32 50 31.5 Q68 32 69.5 52" fill="none" stroke="${AV_INK}" stroke-width="1.6" opacity=".45"/>`}
-    ],
-    m: [
-      {name: "Yana taralı", front: c => avP("M30 47 Q28 24 50 23 Q72 24 70 47 Q68 37 60 35 Q50 39 40 35 Q33 38 30 47Z", c)},
-      {name: "Kıvırcık", front: c => avDots([[30, 44], [34, 34], [43, 28], [53, 27], [62, 30], [69, 37], [71, 46]], 7.5, c)},
-      {name: "Çok kısa", front: c => avP("M31 45 Q31 27 50 27 Q69 27 69 45 Q64 36 50 36 Q36 36 31 45Z", c)},
-      {name: "Kabarık", front: c => avP("M30 47 Q27 26 46 22 Q61 16 70 28 Q73 36 70 47 Q66 35 56 34 Q44 37 30 47Z", c)},
-      {name: "Omuz boyu", back: c => avP("M29 48 Q27 22 50 22 Q73 22 71 48 L72 74 Q66 76 62 72 L38 72 Q34 76 28 74Z", c),
-        front: c => avP("M30 50 Q29 25 50 24 Q71 25 70 50 Q64 34 52 33 L50 37 L48 33 Q36 34 30 50Z", c)}
-    ]
+  // Curly edges: each step between two points is a small outward arc, so a curl outline stays one smooth shape.
+  const avWavy = pts => "M" + pts[0].join(" ") + pts.slice(1).map((p, i) => {
+    const r = (Math.hypot(p[0] - pts[i][0], p[1] - pts[i][1]) * .6).toFixed(2);
+    return ` A${r} ${r} 0 0 1 ${p[0].toFixed(2)} ${p[1].toFixed(2)}`;
+  }).join("");
+  const avArc = (cx, cy, rx, ry, t0, t1, n) => Array.from({length: n + 1}, (_, i) => {
+    const t = (t0 + (t1 - t0) * i / n) * Math.PI / 180;
+    return [cx + rx * Math.cos(t), cy + ry * Math.sin(t)];
+  });
+  const avCurlTop = (cy, ry, c) => {
+    // Over the top, then back along the forehead in small curls that hang down.
+    const pts = [...avArc(50, cy, 24, ry, 165, 375, 10), [69, cy + 2], [62, cy - 3], [54, cy - 2], [46, cy - 2], [38, cy - 3], [31, cy + 2]];
+    pts.push(pts[0]);
+    return avP(avWavy(pts) + "Z", c)
+      + `<path d="M39 ${cy - 7} q2 -3 4 0 M48 ${cy - 10} q2 -3 4 0 M57 ${cy - 7} q2 -3 4 0" fill="none" stroke="${AV_INK}" stroke-width="1.5" stroke-linecap="round" opacity=".35"/>`;
   };
+  // One list from shortest to longest. back sits behind the head, front on top of it;
+  // top (a bun) hides under a hat; over (a scarf) covers the shoulders.
+  const AV_HAIR = [
+    {name: "Çok kısa", front: c => avP("M31 45 Q31 27 50 27 Q69 27 69 45 Q64 36 50 36 Q36 36 31 45Z", c)},
+    {name: "Yana taralı", front: c => avP("M30 47 Q28 24 50 23 Q72 24 70 47 Q68 37 60 35 Q50 39 40 35 Q33 38 30 47Z", c)},
+    {name: "Kabarık", front: c => avP("M30 47 Q27 26 46 22 Q61 16 70 28 Q73 36 70 47 Q66 35 56 34 Q44 37 30 47Z", c)},
+    {name: "Kısa kıvırcık", front: c => avCurlTop(41, 19, c)},
+    {name: "Kahküllü kısa", back: c => avP("M27 50 Q24 22 50 22 Q76 22 73 50 L75 70 Q68 73 62 68 L38 68 Q32 73 25 70Z", c), front: c => avP("M31 46 Q31 25 50 25 Q69 25 69 46 Q50 40 31 46Z", c)},
+    {name: "Topuz", top: c => avC(50, 20, 10, c), front: c => avP("M29.5 50 Q29 28 50 28 Q71 28 70.5 50 Q66 37 50 37 Q34 37 29.5 50Z", c)},
+    {name: "Omuz boyu", back: c => avP("M29 48 Q27 22 50 22 Q73 22 71 48 L72 74 Q66 76 62 72 L38 72 Q34 76 28 74Z", c),
+      front: c => avP("M30 50 Q29 25 50 24 Q71 25 70 50 Q64 34 52 33 L50 37 L48 33 Q36 34 30 50Z", c)},
+    {name: "At kuyruğu", back: c => avP("M66 34 Q92 40 85 78 Q79 62 68 52Z", c), front: c => avP("M29.5 50 Q29 28 50 28 Q71 28 70.5 50 Q66 37 50 37 Q34 37 29.5 50Z", c)},
+    {name: "Uzun kıvırcık",
+      back: c => avP(avWavy([[25, 88], [23, 78], [23, 68], [24, 58], ...avArc(50, 46, 26, 24, 190, 350, 8), [76, 58], [77, 68], [77, 78], [75, 88], [63, 91], [50, 92], [37, 91], [25, 88]]) + "Z", c),
+      front: c => avCurlTop(43, 18, c)},
+    {name: "Uzun düz", back: c => avP("M28 48 Q26 22 50 22 Q74 22 72 48 L76 92 Q50 98 24 92Z", c), front: c => avP("M30 50 Q28 26 50 25 Q72 26 70 50 Q66 37 56 35 Q46 41 30 50Z", c)},
+    {name: "Başörtüsü", scarf: true, over: c => avP("M21 58 Q21 22 50 22 Q79 22 79 58 Q80 77 69 85 Q50 93 31 85 Q20 77 21 58Z", c),
+      front: () => `<path d="M30.5 52 Q32 32 50 31.5 Q68 32 69.5 52" fill="none" stroke="${AV_INK}" stroke-width="1.6" opacity=".45"/>`}
+  ];
+  // Where the hair styles of the first version (split by gender) landed in the single list.
+  const AV_OLD_HAIR = {f: [9, 4, 5, 7, 8, 10], m: [1, 3, 0, 2, 6]};
   const AV_SHOULDERS = "M8 104 L9 93 Q11 82 27 79.5 L42 77 Q50 85 58 77 L73 79.5 Q89 82 91 93 L92 104Z";
   const AV_SLEEVES = `<path d="M19 85 Q23 94 21 104 M81 85 Q77 94 79 104" fill="none" stroke="${AV_INK}" stroke-width="2" stroke-linecap="round"/>`;
   const AV_TOPS = [
     {name: "Tişört", draw: c => avP(AV_SHOULDERS, c) + AV_SLEEVES},
     {name: "V yaka", draw: c => avP("M8 104 L9 93 Q11 82 27 79.5 L42 77 L50 90 L58 77 L73 79.5 Q89 82 91 93 L92 104Z", c) + AV_SLEEVES},
     {name: "Atlet", draw: (c, skin) => avP(AV_SHOULDERS, skin) + avP("M23 104 Q26 93 31 88 L34 78.5 L40.5 77.5 Q42.5 89 50 89 Q57.5 89 59.5 77.5 L66 78.5 L69 88 Q74 93 77 104Z", c)},
-    {name: "Kapüşonlu", draw: c => avP(AV_SHOULDERS, c) + AV_SLEEVES + avP("M34 79 Q50 69 66 79 Q62 91 50 91 Q38 91 34 79Z", c)
-      + `<path d="M45 89 L44 98 M55 89 L56 98" stroke="${AV_INK}" stroke-width="2" stroke-linecap="round"/>`}
+    // The hood lies bunched up behind the neck; strings and a front pocket finish it.
+    {name: "Kapüşonlu", back: c => avP("M29 84 Q30 66 50 65 Q70 66 71 84Z", c),
+      draw: c => avP(AV_SHOULDERS, c) + AV_SLEEVES
+        + `<path d="M46 83 L45 95 M54 83 L55 95 M31 104 Q33 96 40 96 L60 96 Q67 96 69 104" fill="none" stroke="${AV_INK}" stroke-width="2" stroke-linecap="round"/>`
+        + `<rect x="43.6" y="94" width="2.8" height="4" rx="1" fill="#fff" stroke="${AV_INK}" stroke-width="1.4"/><rect x="53.6" y="94" width="2.8" height="4" rx="1" fill="#fff" stroke="${AV_INK}" stroke-width="1.4"/>`}
   ];
   const AV_GLASSES = [
     {name: "Yok", draw: () => ""},
@@ -2619,15 +2635,16 @@ input::placeholder{opacity:1}
     {name: "Kep", draw: c => avP("M29 45 Q29 22 50 22 Q71 22 71 45Z", c) + avP("M50 41 Q72 36 87 44 Q76 50 55 46Z", c) + avC(50, 22.5, 2, c)},
     {name: "Fötr", draw: c => `<ellipse cx="50" cy="38" rx="27" ry="6" fill="${c}" ${AV_L}/>` + avP("M35 37 Q35 19 50 19 Q65 19 65 37 Q50 41 35 37Z", c) + `<path d="M35.4 32 Q50 36 64.6 32" fill="none" stroke="${AV_INK}" stroke-width="3.5"/>`}
   ];
-  const AV_DEFAULT = {g: "f", hair: 0, hairC: 1, skin: 1, top: 0, topC: 0, glasses: 0, ear: 0, clip: 0, hat: 0, accC: 3, bg: 0};
+  const AV_DEFAULT = {hair: 1, hairC: 1, skin: 1, top: 0, topC: 0, glasses: 0, ear: 0, clip: 0, hat: 0, accC: 3, bg: 0};
   // How many choices each part has, for checking a stored or imported profile.
-  const avCount = (k, a) => ({hair: AV_HAIR[a.g].length, hairC: AV_HAIR[a.g][a.hair] && AV_HAIR[a.g][a.hair].scarf ? AV_CLOTH.length : AV_HAIRC.length,
+  const avCount = (k, a) => ({hair: AV_HAIR.length, hairC: AV_HAIR[a.hair] && AV_HAIR[a.hair].scarf ? AV_CLOTH.length : AV_HAIRC.length,
     skin: AV_SKINS.length, top: AV_TOPS.length, topC: AV_CLOTH.length, glasses: AV_GLASSES.length, ear: AV_EARRINGS.length,
     clip: AV_CLIPS.length, hat: AV_HATS.length, accC: AV_CLOTH.length, bg: AV_BGS.length})[k];
   function cleanProfile(raw) {
     if (!raw || typeof raw !== "object") return null;
-    const src = raw.av && typeof raw.av === "object" ? raw.av : {}, av = {g: src.g === "m" ? "m" : "f"};
-    for (const k of Object.keys(AV_DEFAULT)) if (k !== "g") {
+    const src = raw.av && typeof raw.av === "object" ? {...raw.av} : {}, av = {};
+    if (AV_OLD_HAIR[src.g]) src.hair = AV_OLD_HAIR[src.g][src.hair] ?? 0;
+    for (const k of Object.keys(AV_DEFAULT)) {
       const v = Number(src[k]);
       av[k] = Number.isInteger(v) && v >= 0 && v < avCount(k, av) ? v : 0;
     }
@@ -2635,14 +2652,15 @@ input::placeholder{opacity:1}
   }
   let avUid = 0;
   function avatarSvg(a) {
-    const id = "av" + avUid++, hair = AV_HAIR[a.g][a.hair], skin = AV_SKINS[a.skin];
+    const id = "av" + avUid++, hair = AV_HAIR[a.hair], top = AV_TOPS[a.top], skin = AV_SKINS[a.skin];
     const hc = (hair.scarf ? AV_CLOTH : AV_HAIRC)[a.hairC], ac = AV_CLOTH[a.accC];
     const scarf = !!hair.scarf, hat = !scarf && a.hat > 0;
     const ears = scarf ? "" : [30.5, 69.5].map(x => `<ellipse cx="${x}" cy="52" rx="4" ry="5.6" fill="${skin}" ${AV_L}/>`).join("");
     const face = [-1, 1].map(k => `<ellipse cx="${50 + k * 7.5}" cy="51" rx="2.3" ry="2.8" fill="${AV_INK}"/><circle cx="${49.1 + k * 7.5}" cy="49.8" r=".75" fill="#fff"/><circle cx="${50 + k * 12.5}" cy="58" r="3.4" fill="#F4A6C0" opacity=".7"/>`).join("")
       + `<path d="M45.5 62 q4.5 4 9 0" fill="none" stroke="${AV_INK}" stroke-width="2" stroke-linecap="round"/>`;
     const fig = (hair.top && !hat ? hair.top(hc) : "") + (hair.back ? hair.back(hc) : "")
-      + avP("M44 62 L44 84 L56 84 L56 62Z", skin) + AV_TOPS[a.top].draw(AV_CLOTH[a.topC], skin)
+      + (top.back ? top.back(AV_CLOTH[a.topC]) : "")
+      + avP("M44 62 L44 84 L56 84 L56 62Z", skin) + top.draw(AV_CLOTH[a.topC], skin)
       + (hair.over ? hair.over(hc) : "")
       + ears + avP("M50 26 C63 26 70 36 70 50 C70 64 61 74 50 74 C39 74 30 64 30 50 C30 36 37 26 50 26Z", skin) + face
       + hair.front(hc)
@@ -2667,14 +2685,13 @@ input::placeholder{opacity:1}
     persist().catch(err => { store.profile = before; writeFailed(err); });
   }
   function renderProf() {
-    const p = store.profile || {name: "", av: {...AV_DEFAULT}}, a = p.av, hair = AV_HAIR[a.g][a.hair], scarf = !!hair.scarf;
+    const p = store.profile || {name: "", av: {...AV_DEFAULT}}, a = p.av, hair = AV_HAIR[a.hair], scarf = !!hair.scarf;
     const sec = (title, body) => `<div class="av-sec"><h3>${title}</h3>${body}</div>`;
     const opts = (k, list) => `<div class="av-row">${list.map((o, i) => `<button class="av-opt" type="button" data-k="${k}" data-v="${i}" aria-pressed="${a[k] === i}">${avatarSvg({...a, [k]: i})}${o.name}</button>`).join("")}</div>`;
     const sw = (k, colors, label) => `<div class="av-row">${colors.map((c, i) => `<button class="av-sw" type="button" style="background:${c}" data-k="${k}" data-v="${i}" aria-pressed="${a[k] === i}" aria-label="${label} ${i + 1}"></button>`).join("")}</div>`;
     profBody.innerHTML = `<div class="prof-prev">${avatarSvg(a)}<input id="prof-name" maxlength="30" placeholder="Adın" aria-label="Adın"><button class="small-btn sun" id="prof-rnd" type="button">Rastgele</button></div>
       <div class="prof-opts">`
-      + sec("CİNSİYET", `<div class="av-seg"><button type="button" data-g="f" aria-pressed="${a.g === "f"}">Kadın</button><button type="button" data-g="m" aria-pressed="${a.g === "m"}">Erkek</button></div>`)
-      + sec("SAÇ", opts("hair", AV_HAIR[a.g]))
+      + sec("SAÇ", opts("hair", AV_HAIR))
       + sec(scarf ? "BAŞÖRTÜSÜ RENGİ" : "SAÇ RENGİ", sw("hairC", scarf ? AV_CLOTH : AV_HAIRC, "Renk"))
       + sec("TEN", sw("skin", AV_SKINS, "Ten"))
       + sec("ÜST", opts("top", AV_TOPS))
@@ -2690,7 +2707,7 @@ input::placeholder{opacity:1}
     name.onkeydown = ev => { if (ev.key === "Enter") name.blur(); };
     $("#prof-rnd").onclick = () => {
       const r = n => Math.floor(Math.random() * n);
-      const av = {...a, hair: r(AV_HAIR[a.g].length), top: r(AV_TOPS.length), topC: r(AV_CLOTH.length), glasses: Math.random() < .6 ? 0 : r(AV_GLASSES.length),
+      const av = {...a, hair: r(AV_HAIR.length), top: r(AV_TOPS.length), topC: r(AV_CLOTH.length), glasses: Math.random() < .6 ? 0 : r(AV_GLASSES.length),
         ear: r(AV_EARRINGS.length), hat: Math.random() < .6 ? 0 : r(AV_HATS.length), clip: r(AV_CLIPS.length), accC: r(AV_CLOTH.length), bg: r(AV_BGS.length)};
       av.hairC = r(avCount("hairC", av));
       setAv(av);
@@ -2702,11 +2719,10 @@ input::placeholder{opacity:1}
     renderProf();
   }
   profBody.addEventListener("click", ev => {
-    const b = ev.target.closest("button[data-k], button[data-g]");
+    const b = ev.target.closest("button[data-k]");
     if (!b) return;
     const a = {...(store.profile ? store.profile.av : AV_DEFAULT)};
-    if (b.dataset.g) { if (a.g === b.dataset.g) return; a.g = b.dataset.g; a.hair = 0; }
-    else a[b.dataset.k] = +b.dataset.v;
+    a[b.dataset.k] = +b.dataset.v;
     setAv(a);
   });
   function openProf() { profModal.hidden = false; renderProf(); $("#prof-close").focus(); }
